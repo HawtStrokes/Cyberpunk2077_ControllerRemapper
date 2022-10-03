@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ControllerRemapper", "ControllerRemapper\CyberpunkControllerRemapper.vcxproj", "{57675C96-452A-48F0-BCA5-70BDCE8DE5BE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug_DLL_GUI|x64 = Debug_DLL_GUI|x64
+		Debug_DLL|x64 = Debug_DLL|x64
+		Release_DLL_GUI|x64 = Release_DLL_GUI|x64
+		Release_DLL|x64 = Release_DLL|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{57675C96-452A-48F0-BCA5-70BDCE8DE5BE}.Debug_DLL_GUI|x64.ActiveCfg = Debug_DLL_GUI|x64
+		{57675C96-452A-48F0-BCA5-70BDCE8DE5BE}.Debug_DLL_GUI|x64.Build.0 = Debug_DLL_GUI|x64
+		{57675C96-452A-48F0-BCA5-70BDCE8DE5BE}.Debug_DLL|x64.ActiveCfg = Debug_DLL|x64
+		{57675C96-452A-48F0-BCA5-70BDCE8DE5BE}.Debug_DLL|x64.Build.0 = Debug_DLL|x64
+		{57675C96-452A-48F0-BCA5-70BDCE8DE5BE}.Release_DLL_GUI|x64.ActiveCfg = Release_DLL_GUI|x64
+		{57675C96-452A-48F0-BCA5-70BDCE8DE5BE}.Release_DLL_GUI|x64.Build.0 = Release_DLL_GUI|x64
+		{57675C96-452A-48F0-BCA5-70BDCE8DE5BE}.Release_DLL|x64.ActiveCfg = Debug_DLL|x64
+		{57675C96-452A-48F0-BCA5-70BDCE8DE5BE}.Release_DLL|x64.Build.0 = Debug_DLL|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BDDC4E10-2972-44CD-8692-C74674A0CFE3}
+	EndGlobalSection
+EndGlobal
