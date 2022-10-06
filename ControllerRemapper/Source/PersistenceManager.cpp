@@ -1,6 +1,6 @@
 #include <filesystem>
 
-#include "ControllerMapper.h"
+#include "ActionButtonBinder.h"
 #include "PersistenceManager.h"
 #include "ButtonSingle.h"
 #include "ButtonCombo.h"
@@ -8,15 +8,37 @@
 #include "Exceptions.h"
 
 #include "HawtLib/File/File.h"
+#include "HawtLib/Text/TextFormatting.h"
 
-// TODO: Update Persistence Manager to Conform to the new XMLName Creation Standard (see IButton.h and Action.h static member functions)
-// TODO: Deprecate use of manual XML code/name assignment
+///	###Sample INI Config:
+///	[(int) ActionType]
+///	options = CharacterOptions
+///	isCombo = false
+///	key = ControllerKey
+///
+/// [(int) ActionType]
+///	options = CharacterOptions
+///	isCombo = true
+///	key1 = ControllerKey
+///	key2 = ConrollerKey
+///
+///	###How to config input to usable data:
+///	BuildAction(CharacterAction(ActionType), options)
+///	if(isCombo) ButtonCombo(key1, key2)
+///	...
+///
+///	What we need:
+///	ActionType as section (1), KeyValues: options = CharacterOptions, isCombo = true/false, keys...
 
 namespace ControllerMapper {
 
+	PersistenceManager::PersistenceManager() : m_SaveDir("Saves/") {
+		UpdateSaveCount();
+	}
+
 	void PersistenceManager::UpdateSaveCount() {
 		int saveCount = 0;
-		for (auto& entry : std::filesystem::directory_iterator(m_SaveDir)) {
+		for (auto& entry : std::filesystem::directory_iterator(std::filesystem::path(m_SaveDir))) {
 			if (entry.is_directory()) {
 				++saveCount;
 			}
@@ -24,9 +46,9 @@ namespace ControllerMapper {
 		m_NumberOfSaves = saveCount;
 	}
 
-	bool PersistenceManager::VerifyGameDir(const std::string& gameDir) {
-		if (!std::filesystem::exists(gameDir + R"(\REDprelauncher.exe)") &&
-			!std::filesystem::exists(gameDir + R"(\bin\x64\Cyberpunk2077.exe)")) return false;
+	bool PersistenceManager::Internal_VerifyGameDir(const std::string& gameDir) {
+		if (!std::filesystem::exists(gameDir + R"(/REDprelauncher.exe)") &&
+			!std::filesystem::exists(gameDir + R"(/bin/x64/Cyberpunk2077.exe)")) return false;
 
 		return true;
 	}
@@ -36,68 +58,87 @@ namespace ControllerMapper {
 		return instance;
 	}
 
-	void PersistenceManager::Save() {	// Make Ini File
+	// Saves current config as Ini
+	void PersistenceManager::Save(const std::string& configName) {	// Make Ini File
 		HawtLib::File::IniFile iniFile;
-		auto x = ControllerMapper::Get().m_Binds;
+		auto x = ActionButtonBinder::Get().m_Binds;
 		for (const auto& kv : x) {
 			// Use Action integer equivalent as section name
-			std::string sectionName = std::to_string(static_cast<unsigned int>(kv.second->GetCharacterAction().actionType));
-			const auto btnSPtr = dynamic_cast<ButtonSingle*>(kv.first);
+			std::string sectionName = std::to_string(static_cast<unsigned int>(kv.first->GetCharacterAction().actionType));
+
+			iniFile.CreateSection(sectionName);	// Create the section
+			iniFile.AddKeyValue(sectionName,	// Add options
+					"options", std::to_string(kv.first->GetOptions().options));
+
+			const auto btnSPtr = dynamic_cast<ButtonSingle*>(kv.second.get());
 			if (btnSPtr != nullptr) {
-				iniFile.AddKeyValue(sectionName, "IsCombo", "false")
-					.AddKeyValue(sectionName, "Key", std::to_string(static_cast<unsigned>(btnSPtr->GetKey())));
+				// add one controllerkey
+				iniFile.AddKeyValue(sectionName, "isCombo", "false")
+					.AddKeyValue(sectionName, "key", std::to_string(static_cast<unsigned>(btnSPtr->GetKey())));
 			}
 			else {
-				const auto btnCPtr = dynamic_cast<ButtonCombo*>(kv.first);
-				iniFile.AddKeyValue(sectionName, "IsCombo", "false")
-					.AddKeyValue(sectionName, "Key1", std::to_string(static_cast<unsigned>(btnCPtr->GetKey1())))
-					.AddKeyValue(sectionName, "Key2", std::to_string(static_cast<unsigned>(btnCPtr->GetKey2())));
+				// Add two controllerkeys
+				const auto btnCPtr = dynamic_cast<ButtonCombo*>(kv.second.get());
+				iniFile.AddKeyValue(sectionName, "isCombo", "false")
+					.AddKeyValue(sectionName, "key1", std::to_string(static_cast<unsigned>(btnCPtr->GetKey1())))
+					.AddKeyValue(sectionName, "key2", std::to_string(static_cast<unsigned>(btnCPtr->GetKey2())));
 			}
-			iniFile.CreateSection(sectionName);
-			iniFile.AddKeyValue(std::to_string(static_cast<unsigned int>(kv.second->GetCharacterAction().actionType)),
-				"ButtonXMLName",	// Button XML Name
-				kv.first->GetXMLName())
-				.AddKeyValue(sectionName,
-					"Options", std::to_string(kv.second->GetOptions().options));
 		}
-		UpdateSaveCount();
-		/* Sample Ini Output
-		 *[1]
-		 *IsCombo = true
-		 *key1 = 1
-		 *key2 = 4
-		 *ButtonXMLName = CUSTOM_NAME
-		 *Options = 5
-		 *[2]
-		 *isCombo = false
-		 *key = 3
-		 *ButtonXMLName = Custom_NaMe
-		 *Options = 5
-		 */
-	}
-	
-	void PersistenceManager::Load(unsigned saveCount) {
-		m_LoadedSave = saveCount;
-		// Load Ini File
-		HawtLib::File::IniFile iniFile(m_SaveDir + R"(/)" + std::to_string(m_LoadedSave) + R"(save.ini)");
-		auto sectionNames = iniFile.GetSectionNames();
+		const std::string outPutDir = m_SaveDir + "/" + configName;
 
+
+		if (!std::filesystem::exists(std::filesystem::path(outPutDir)))
+		{
+			auto vecDir = HawtLib::Text::SplitString(outPutDir, '/');
+			std::string buffer;
+			for (auto& dir : vecDir)
+			{
+				buffer += dir + "/";
+				std::filesystem::create_directory(std::filesystem::path(buffer));
+			}
+		}
+			
+
+		iniFile.Save(outPutDir + "/config.ini");	// save the ini File in $(SaveDir)\$(saveCount)\config.ini
+		// UpdateSaveCount();	// update save count
+	}
+
+	// Loads a configuratin ini and update Binds
+	void PersistenceManager::Load(const std::string& configName) {
+		std::string outPutDir = m_SaveDir + "/" + configName + "/";
+		if (!std::filesystem::exists(std::filesystem::path(outPutDir)) && !std::filesystem::exists(std::filesystem::path(outPutDir + "/config.ini"))) {
+			throw ConfigurationDoesNotExist();
+		}
+
+		// Load Ini File
+		HawtLib::File::IniFile iniFile(outPutDir + "config.ini");
+		const auto sectionNames = iniFile.GetSectionNames();
+
+		//ActionButtonBinder::Get()._CleanUp();		// delete heap allocated stuff
+		ActionButtonBinder::Get().m_Binds.clear();	// clear the map
 
 		// Loop through each section
-		for (auto sectionName : sectionNames) {
-			bool isCombo;
-			ControllerKey key1 = ControllerKey::None;
-			ControllerKey key2 = ControllerKey::None;
-			std::string buttonXMLName = "";
-			CharacterAction characterAction = static_cast<CharacterAction::ActionType>(std::stoi(*sectionName));
+		for (const auto sectionName : sectionNames) {
+			bool isCombo = false;
+			struct
+			{
+				union
+				{
+					ControllerKey key1;
+					ControllerKey key;
+				};
+				ControllerKey key2;
+			} keys = { {ControllerKey::None}, ControllerKey::None };
+
+
+			CharacterAction characterAction = static_cast<CharacterAction::ActionType>(std::stoi(sectionName));
 			CharacterOptions characterOption = CharacterOptions(0);
 
 			// Loop through each keyVal in Section and update local vars
-			for (auto kV : iniFile.GetSectionKV(*sectionName)->keyValues) {
+			for (auto kV : iniFile.GetSectionKV(sectionName)->keyValues) {
 				if (kV->key == "isCombo") {
 					if (kV->value == "true") {
 						isCombo = true;
-						//dynamic_cast<ButtonCombo*>(button);
 					}
 					else if (kV->value == "false") {
 						isCombo = false;
@@ -106,35 +147,32 @@ namespace ControllerMapper {
 						throw ConfigurationCorruptedError();
 					}
 				}
-				else if (kV->key == "key1") {
-					key1 = static_cast<ControllerKey>(std::stoi(kV->value));
+				else if (kV->key == "options") {
+					characterOption.options = static_cast<unsigned int>(std::stoi(kV->value));
 				}
-				else if (kV->key == "key2") {
-					key2 = static_cast<ControllerKey>(std::stoi(kV->value));
+				else if (kV->key == "key1" && isCombo) {
+					keys.key1 = static_cast<ControllerKey>(std::stoi(kV->value));
 				}
-				else if (kV->key == "ButtonXMLName") {
-					buttonXMLName = kV->value;
+				else if (kV->key == "key2" && isCombo) {
+					keys.key2 = static_cast<ControllerKey>(std::stoi(kV->value));
 				}
-				else if (kV->key == "Options") {
-					characterOption = static_cast<CharacterOptions>(std::stoi(kV->value));
+				else if (kV->key == "key" && !isCombo) {
+					keys.key = static_cast<ControllerKey>(std::stoi(kV->value));
 				}
 			}
 
 			// After looping through each keyVal, bind an action to a button
 			// Also check if configuration loaded is valid
-			if (characterOption.options != 0 && buttonXMLName.length() != 0 && (key1 != ControllerKey::None && key2 != ControllerKey::None)) {
-				ControllerMapper::Get()._CleanUp();
-				ControllerMapper::Get().m_Binds.clear();
+			if (characterOption.options != 0 && keys.key1 != ControllerKey::None &&
+				(isCombo? ControllerKey::None != keys.key2 : ControllerKey::None == keys.key2)) {	// if combo and key2 is not null || if !combo and key2 is null
 				try {
-
-					auto action = Action::BuildActionPtr(characterAction, characterOption);
+					
 					if (isCombo == true) {
-						auto button = new ButtonCombo(key1, key2);
-						ControllerMapper::Get().Bind(button, action);	// Make a bind
+						//ActionButtonBinder::Get().Bind(Action::BuildActionPtr(characterAction, characterOption), new ButtonCombo(keys.key1, keys.key2));	// Make a bind
+						ActionButtonBinder::Get().Bind(Action::BuildActionPtr(characterAction, characterOption), std::make_shared<ButtonCombo>(keys.key1, keys.key2));
 					}
 					else {
-						auto button = new ButtonSingle(key1);
-						ControllerMapper::Get().Bind(button, action);	// Make a bind
+						ActionButtonBinder::Get().Bind(Action::BuildActionPtr(characterAction, characterOption), std::make_shared<ButtonSingle>(keys.key));	// Make a bind
 					}
 				}
 
@@ -149,23 +187,40 @@ namespace ControllerMapper {
 
 	}
 
-	void PersistenceManager::Apply(unsigned) {
-		ControllerMapper::Get().BuildXML(m_GameDir + R"(\r6\config\)");
+	void PersistenceManager::Delete(const std::string& configName) {
+		std::filesystem::remove_all(std::filesystem::path(m_SaveDir + "/" + configName + "/"));
 	}
 
+	// Applies custom binds to game
+	void PersistenceManager::Apply() {
+		ActionButtonBinder::Get().BuildXML(m_GameDir + R"(\r6\config\)");
+	}
+
+	// Set Game directory
 	void PersistenceManager::SetGameDir(const std::string& gameDir) {
-		if (!VerifyGameDir(gameDir)) throw InvalidGameDir();
-		else m_GameDir = gameDir;
+		if (!Internal_VerifyGameDir(gameDir)) throw InvalidGameDir();
+		else m_GameDir = gameDir + "/";
 	}
 
+	void PersistenceManager::SetSaveDir(const std::string& saveDir) {
+		m_SaveDir = saveDir + "/";
+	}
+
+	void PersistenceManager::SetLoadedSave(const std::string& configName) {
+		m_LoadedSave = configName;
+	}
+
+	// Get Game directory
 	std::string PersistenceManager::GetGameDir() {
 		return m_GameDir;
 	}
 
-	unsigned PersistenceManager::GetLoadedSave() {
+	// Get loaded saveCount
+	std::string PersistenceManager::GetLoadedSave() {
 		return m_LoadedSave;
 	}
 
+	// Get number of saves
 	unsigned PersistenceManager::GetNumberOfSaves() {
 		return m_NumberOfSaves;
 	}

@@ -8,38 +8,38 @@ namespace ControllerMapper
 {
 	// CharacterAction //
 
-	std::string CharacterAction::Static_GetXMLBlock(ActionType actionType) {
-		static std::unordered_map <ActionType, std::string> xmlBlockMap = {
-			{ActionType::Cyberware,		R"(<mapping name="IconicCyberware_Button" type="Button" >
+	std::string GetXMLBlock(CharacterAction::ActionType actionType) {
+		static std::unordered_map <CharacterAction::ActionType, std::string> xmlBlockMap = {
+			{CharacterAction::ActionType::Cyberware,		R"(<mapping name="IconicCyberware_Button" type="Button" >
         <button id="IK_E" overridableUI="iconic"/>
         <button id="{}" />
     </mapping>)"},
-			{ActionType::CombatGadget,	R"(<mapping name="CombatGadget_Button" type="Button" >
+			{CharacterAction::ActionType::CombatGadget,	R"(<mapping name="CombatGadget_Button" type="Button" >
         <button id="{}" />
         <button id="IK_MiddleMouse" overridableUI="combatGadget"/>
     </mapping> )"},
-			{ActionType::Consumable,	R"( <mapping name="UseConsumable_Button" type="Button" >
+			{CharacterAction::ActionType::Consumable,	R"( <mapping name="UseConsumable_Button" type="Button" >
         <button id="{}" />
         <button id="IK_X" overridableUI="useConsumable"/>
     </mapping>)"},
 
-			{ActionType::Jump,			R"(<mapping name="Jump_Button" type="Button" >
+			{CharacterAction::ActionType::Jump,			R"(<mapping name="Jump_Button" type="Button" >
         <button id="{}" />
         <button id="IK_Space" overridableUI="jump"/>
     </mapping>)"},
-			{ActionType::Crouch,		R"(<mapping name="Crouch_Button" type="Button" >
+			{CharacterAction::ActionType::Crouch,		R"(<mapping name="Crouch_Button" type="Button" >
 		<button id="{}" overridableUI="crouchHold"/>
     </mapping>
 	<mapping name="ToggleCrouch_Button" type="Button" >
 		<button id="{}" />
         <button id="IK_C" overridableUI="crouchToggle"/>
     </mapping>)"},	// Supports Toggle
-			{ActionType::Dodge,			R"(<mapping name="Dodge_Button" type="Button" >
+			{CharacterAction::ActionType::Dodge,			R"(<mapping name="Dodge_Button" type="Button" >
 		<button id="IK_Pad_B_CIRCLE" />
 		<button id="IK_LControl" overridableUI="crouchHold"/>
 		<button id="IK_C" overridableUI="crouchToggle"/>
     </mapping>)"},	
-			{ActionType::Sprint,		R"(<mapping name="Sprint_Button" type="Button" >
+			{CharacterAction::ActionType::Sprint,		R"(<mapping name="Sprint_Button" type="Button" >
     	<button id="{}" overridableUI="sprintHold"/>
     </mapping>
 	<mapping name="ToggleSprint_Button" type="Button" >
@@ -47,15 +47,15 @@ namespace ControllerMapper
 		<button id="IK_LShift" overridableUI="sprintToggle"/>
     </mapping>)"},	// Supports Toggle
 
-			{ActionType::Phone,			R"(	<mapping name="PhoneInteract_Button" type="Button" >        
+			{CharacterAction::ActionType::Phone,			R"(	<mapping name="PhoneInteract_Button" type="Button" >        
 		<button id="IK_T" overridableUI="openPhone"/>
 		<button id="{}" />
     </mapping>)"},
-			{ActionType::CallCar,		R"(    <mapping name="CallVehicle_Button" type="Button" >
+			{CharacterAction::ActionType::CallCar,		R"(    <mapping name="CallVehicle_Button" type="Button" >
         <button id="{}" />
         <button id="IK_V" overridableUI="callVehicle"/>
     </mapping> )"},
-			{ActionType::Scan,			R"(<mapping name="Vision_Hold_Button" type="Button" >
+			{CharacterAction::ActionType::Scan,			R"(<mapping name="Vision_Hold_Button" type="Button" >
 		<button id="IK_Tab" overridableUI="visionHold"/>
 		<button id="{}" />
 	</mapping>
@@ -64,41 +64,41 @@ namespace ControllerMapper
 		<button id="{}" />
 	</mapping>
 				)"},	// Supports Toggle
-			{ActionType::Tag,			R"(
+			{CharacterAction::ActionType::Tag,			R"(
     <mapping name="Tag_Button" type="Button" >
 		<button id="{}" />
 		<button id="IK_MiddleMouse" overridableUI="tag"/>
 	</mapping>	)"},
 
-			{ActionType::Choice1,		R"(    <mapping name="Choice1" type="Button" >
+			{CharacterAction::ActionType::Choice1,		R"(    <mapping name="Choice1" type="Button" >
 		<button id="IK_F" overridableUI="selectChoice"/>
 		<button id="{}" />
 	</mapping>)"},
-			{ActionType::Choice2,		R"(	<mapping name="Choice2" type="Button" >
+			{CharacterAction::ActionType::Choice2,		R"(	<mapping name="Choice2" type="Button" >
 		<button id="IK_R" overridableUI="choice2"/>
 		<button id="{}" />
 	</mapping>)"},
 
-			{ActionType::Notification,	R"(    <mapping name="Notification_Button" type="Button" >        
+			{CharacterAction::ActionType::Notification,	R"(    <mapping name="Notification_Button" type="Button" >        
 		<button id="IK_Z" overridableUI="openNotifiation"/>
 		<button id="{}" />
     </mapping>)"},
 
-			{ActionType::CycleWeapons,	R"(    <mapping name="WeaponWheel_Button" type="Button" >
+			{CharacterAction::ActionType::CycleWeapons,	R"(    <mapping name="WeaponWheel_Button" type="Button" >
 		<button id="{}" />
 		<button id="IK_Alt" overridableUI="switchItem"/>
     </mapping> )"},
-			{ActionType::PreviousWeapon,R"(	<mapping name="PreviousWeapon_Button" type="Button" >
+			{CharacterAction::ActionType::PreviousWeapon,R"(	<mapping name="PreviousWeapon_Button" type="Button" >
 		<button id="IK_MouseWheelDown" overridableUI="previousWeapon"/>
 		<button id="{}" overridableUI="previousWeapon"/> 
 	</mapping>	)"},
-			{ActionType::QuickMelee,	R"(    <mapping name="QuickMelee_Button" type="Button" >
+			{CharacterAction::ActionType::QuickMelee,	R"(    <mapping name="QuickMelee_Button" type="Button" >
 		<button id="{}" />
 		<button id="IK_Q" overridableUI="quickmelee"/>
     </mapping>
 )"},
 
-			{ActionType::Reload,		R"(	<mapping name="Reload_Button" type="Button" >
+			{CharacterAction::ActionType::Reload,		R"(	<mapping name="Reload_Button" type="Button" >
         <button id="IK_R" overridableUI="reload"/>
 		<button id="{}" />
     </mapping>)"}
@@ -106,36 +106,37 @@ namespace ControllerMapper
 		return xmlBlockMap.at(actionType);
 	}
 
-	std::string CharacterAction::Static_GetXMLActionName(ActionType actionType, bool isToggle) {
-		static std::unordered_map<ActionType, std::string> xmlActionNameMap = {
-			{ActionType::Cyberware, "IconicCyberware_Button"},
-			{ActionType::CombatGadget, "CombatGadget_Button"},
-			{ActionType::Consumable, "UseConsumable_Button"},
+	std::string GetXMLActionName(CharacterAction::ActionType actionType, bool isToggle) {
+		
+		static std::unordered_map<CharacterAction::ActionType, std::string> xmlActionNameMap = {
+			{CharacterAction::ActionType::Cyberware, "IconicCyberware_Button"},
+			{CharacterAction::ActionType::CombatGadget, "CombatGadget_Button"},
+			{CharacterAction::ActionType::Consumable, "UseConsumable_Button"},
 
-			{ActionType::Jump, "Jump_Button"},
-			{ActionType::Crouch, "Crouch_Button\nToggleCrouch_Button"},
-			{ActionType::Dodge, "Dodge_Button"},
-			{ActionType::Sprint, "Sprint_Button\nToggleSprint_Button"},
+			{CharacterAction::ActionType::Jump, "Jump_Button"},
+			{CharacterAction::ActionType::Crouch, "Crouch_Button\nToggleCrouch_Button"},
+			{CharacterAction::ActionType::Dodge, "Dodge_Button"},
+			{CharacterAction::ActionType::Sprint, "Sprint_Button\nToggleSprint_Button"},
 
-			{ActionType::Phone, "PhoneInteract_Button"},
-			{ActionType::CallCar, "CallVehicle_Button"},
-			{ActionType::Scan, "Vision_Hold_Button\nVision_Toggle_Button"},
-			{ActionType::Tag, "Tag_Button"},
+			{CharacterAction::ActionType::Phone, "PhoneInteract_Button"},
+			{CharacterAction::ActionType::CallCar, "CallVehicle_Button"},
+			{CharacterAction::ActionType::Scan, "Vision_Hold_Button\nVision_Toggle_Button"},
+			{CharacterAction::ActionType::Tag, "Tag_Button"},
 
-			{ActionType::Choice1, "Choice1"},
-			{ActionType::Choice2, "Choice2"},
+			{CharacterAction::ActionType::Choice1, "Choice1"},
+			{CharacterAction::ActionType::Choice2, "Choice2"},
 
-			{ActionType::Notification, "Notification_Button"},
+			{CharacterAction::ActionType::Notification, "Notification_Button"},
 
-			{ActionType::CycleWeapons, "WeaponWheel_Button"},
-			{ActionType::PreviousWeapon, "PreviousWeapon_Button"},
-			{ActionType::QuickMelee, "QuickMelee_Button"},
+			{CharacterAction::ActionType::CycleWeapons, "WeaponWheel_Button"},
+			{CharacterAction::ActionType::PreviousWeapon, "PreviousWeapon_Button"},
+			{CharacterAction::ActionType::QuickMelee, "QuickMelee_Button"},
 
-			{ActionType::Reload, "Reload_Button"}
+			{CharacterAction::ActionType::Reload, "Reload_Button"}
 		};
 		
 			// check if action supports toggle
-		if (actionType == ActionType::Crouch || actionType == ActionType::Sprint || actionType == ActionType::Scan) {
+		if (actionType == CharacterAction::ActionType::Crouch || actionType == CharacterAction::ActionType::Sprint || actionType == CharacterAction::ActionType::Scan) {
 			std::istringstream iss(xmlActionNameMap.at(actionType));
 			std::string line;
 			const int returnIdx = isToggle ? 1 : 0; // return second line of string if isToggle is true; otherwose return the first line
@@ -148,11 +149,8 @@ namespace ControllerMapper
 		{
 			return xmlActionNameMap.at(actionType);
 		}
-		else
-		{
-			throw InvalidCharacterOptions();	// we can't have any more actions that support toggle because of the first branch
-		}
-			
+
+		throw InvalidCharacterOptions();	// we can't have any more actions that support toggle because of the first branch
 	}
 
 	unsigned int CharacterAction::Internal_GetSupportedOptions() {
@@ -251,9 +249,9 @@ namespace ControllerMapper
 			}
 		}
 		// Fill XMLCodeBlocks with corresponsing content (still requires formatting to fill in keyName and actionName)
-		m_XMLCode = {CharacterAction::Static_GetXMLBlock(characterAction.actionType), [&]()->std::string
+		m_XMLCode = {GetXMLBlock(characterAction.actionType), [&]()->std::string
 		{
-			if (Static_DoubleTapEnabled(characterOptions)) return R"(<multitap action="{}" count="2" uptime="0.2" downtime="0.2" />)";
+			if (IsDoubleTapEnabled(characterOptions)) return R"(<multitap action="{}" count="2" uptime="0.2" downtime="0.2" />)";
 			else return "";
 		}()};
 	}
@@ -284,7 +282,6 @@ namespace ControllerMapper
 		// XML Built in the function who called this ctor
 	}
 
-	// Factory-esque Public Member Function
 	Action Action::BuildAction(CharacterAction characterAction, CharacterOptions characterOptions)
 	{
 		// Verifty Action Support and init
@@ -300,7 +297,7 @@ namespace ControllerMapper
 	Action* Action::BuildActionPtr(CharacterAction characterAction, CharacterOptions characterOptions) {
 		// Verifty Action Support and init
 		if (Internal_VerifyActionSupport(characterAction, characterOptions)) {
-			auto action = new Action{ characterAction, characterOptions };
+			auto* action = new Action{ characterAction, characterOptions };
 			action->Internal_CreateXMLCodeBlock(characterAction, characterOptions);
 			return action;
 		}
@@ -322,7 +319,7 @@ namespace ControllerMapper
 		return m_XMLCode;
 	}
 
-	bool Action::Static_DoubleTapEnabled(CharacterOptions characterOptions) {
+	bool IsDoubleTapEnabled(CharacterOptions characterOptions) {
 		// Read first bit (which is either a 1 or 0)
 		return (static_cast<unsigned>(static_cast<unsigned char>(characterOptions.options << 7)) >> 7);
 	}

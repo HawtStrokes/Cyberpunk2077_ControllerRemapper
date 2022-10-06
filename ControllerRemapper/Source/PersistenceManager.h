@@ -3,28 +3,41 @@
 
 namespace ControllerMapper
 {
+	struct
+	{
+		Action* actionPtr;
+		IButton* buttonPtr;
+	} pointerStorage;
+
 	class PersistenceManager
 	{
 	private:
+		bool Internal_VerifyGameDir(const std::string&);
+
+	private:
 		std::string m_GameDir;
 		std::string m_SaveDir;
-		unsigned int m_LoadedSave;
+		std::string m_LoadedSave;
 		unsigned int m_NumberOfSaves;
 
-		PersistenceManager() = default;
+		PersistenceManager();
 
 	public:
 		static PersistenceManager& Get();
 
-		void Save();
-		void Load(unsigned);
-		void Apply(unsigned);
+		void Save(const std::string& configName);
+		void Load(const std::string& configName);
+		void Delete(const std::string& configName);
+
+		void Apply();
 		void UpdateSaveCount();
 
 		void SetGameDir(const std::string& gameDir);
-		bool VerifyGameDir(const std::string&);
+		void SetSaveDir(const std::string& saveDir);
+		void SetLoadedSave(const std::string& configName);
+
 		std::string GetGameDir();
-		unsigned int GetLoadedSave();
+		std::string GetLoadedSave();
 		unsigned int GetNumberOfSaves();
 	};
 }

@@ -68,11 +68,6 @@ namespace ControllerMapper
 			Reload
 		};
 
-		// returns xml block for userMap
-		static std::string Static_GetXMLBlock(ActionType actionType);
-
-		static std::string Static_GetXMLActionName(ActionType actionType, bool isToggle = false);
-
 	private:
 		unsigned int Internal_GetSupportedOptions();
 
@@ -106,8 +101,8 @@ namespace ControllerMapper
 
 		Action(const Action&) = default;
 		Action& operator= (const Action&) = default;
-		//Action(const Action&&);
-		//Action& operator= (const Action&&);
+		//Action(const Action&&) = default;
+		//Action& operator= (const Action&&) = default;
 		~Action() = default;
 
 		CharacterAction GetCharacterAction() const;
@@ -124,7 +119,11 @@ namespace ControllerMapper
 		XMLCode GetXMLCode();
 
 	public:
-		static bool Static_DoubleTapEnabled(CharacterOptions characterOptions);
+		//static bool Static_DoubleTapEnabled(CharacterOptions characterOptions);
 	};
+
+	bool IsDoubleTapEnabled(CharacterOptions characterOptions);
+	std::string GetXMLBlock(CharacterAction::ActionType actionType);
+	std::string GetXMLActionName(CharacterAction::ActionType actionType, bool isToggle = false);
 
 }

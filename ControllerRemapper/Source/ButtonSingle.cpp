@@ -18,18 +18,18 @@ namespace ControllerMapper
 		return false;	// not the same
 	}
 
-	size_t ButtonSingle::Hash()
-	{
-		return HawtLib::Crypto::DJB2(m_XMLName);	// Hash the xml name
-	}
+	//size_t ButtonSingle::Hash()
+	//{
+	//	return HawtLib::Crypto::DJB2(m_XMLName);	// Hash the xml name
+	//}
 
-	size_t ButtonSingle::Hash() const
-	{
-		return HawtLib::Crypto::DJB2(m_XMLName);	// Hash the xml name
-	}
+	//size_t ButtonSingle::Hash() const
+	//{
+	//	return HawtLib::Crypto::DJB2(m_XMLName);	// Hash the xml name
+	//}
 
 	ButtonSingle::ButtonSingle(ControllerKey key) : m_Key(key) {
-		m_XMLName = Static_GetControllerKeyXML(key);
+		m_XMLName = GetControllerKeyXML(key);
 	}
 	ControllerKey ButtonSingle::GetKey() const {
 		return m_Key;

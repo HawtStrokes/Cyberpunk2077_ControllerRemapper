@@ -1,0 +1,9 @@
+[submodule "External/HawtLib"]
+	path = External/HawtLib
+	url = https://github.com/HawtStrokes/HawtLib.git
+[submodule "External/fmt"]
+	path = External/fmt
+	url = https://github.com/HawtStrokes/fmt.git
+[submodule "External/MakeBigStringMicrosoftCompliant"]
+	path = External/MakeBigStringMicrosoftCompliant
+	url = https://github.com/HawtStrokes/MakeBigStringMicrosoftCompliant.git

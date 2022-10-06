@@ -24,7 +24,7 @@
     <ClCompile Include="Source\Action.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ControllerMapper.cpp">
+    <ClCompile Include="Source\ActionButtonBinder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\ButtonSingle.cpp">
@@ -44,7 +44,7 @@
     <ClInclude Include="Source\ButtonCombo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\ControllerMapper.h">
+    <ClInclude Include="Source\ActionButtonBinder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\PersistenceManager.h">
@@ -59,8 +59,25 @@
     <ClInclude Include="Source\SharedTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Bases.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Notes\Notes.txt" />
+    <Text Include="Resource\strBaseUM.txt" />
+    <Text Include="Resource\strBaseIC.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="Resource\BaseIC.xml" />
+    <Xml Include="Resource\BaseUM.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Scripts\CreateBaseXMLStringCode.bat">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Scripts\CopyDLL.bat">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
