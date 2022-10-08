@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Notes\Test.cpp" />
     <ClCompile Include="Source\Action.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\ButtonCombo.cpp" />

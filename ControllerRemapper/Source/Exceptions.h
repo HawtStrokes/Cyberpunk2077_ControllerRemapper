@@ -17,12 +17,18 @@ namespace ControllerMapper
 	class InvalidCharacterOptions : public std::exception
 	{
 	public:
-		InvalidCharacterOptions() : exception("Invalid CharacterOptions For Corresponding CharacterAction") {}
+		InvalidCharacterOptions() : exception("Invalid CharacterOptions For Corresponding CharacterActio!") {}
 	};
 
 	class ConfigurationDoesNotExist : public std::exception
 	{
 	public:
-		ConfigurationDoesNotExist() : exception("Configuration Does Not Exist!!!") {}
+		ConfigurationDoesNotExist() : exception("Configuration Does Not Exist!") {}
+	};
+
+	class DirectoryIsDisallowed : public std::exception
+	{
+	public:
+		DirectoryIsDisallowed() : exception("Input Is Not A File!") {}
 	};
 }

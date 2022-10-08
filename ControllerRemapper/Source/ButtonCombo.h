@@ -15,9 +15,6 @@ namespace ControllerMapper {
 
 		bool operator==(const IButton* other) const override;
 
-		//size_t Hash() override;
-		//size_t Hash() const override;
-
 	public:
 		ButtonCombo(ControllerKey key1, ControllerKey key2);
 

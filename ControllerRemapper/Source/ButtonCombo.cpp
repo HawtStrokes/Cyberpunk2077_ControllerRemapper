@@ -1,6 +1,5 @@
 #include "ButtonCombo.h"
-
-#include <HawtLib/Crypto/Hashing.h>
+// #include <HawtLib/Crypto/Hashing.h>
 
 namespace ControllerMapper
 {
@@ -17,16 +16,6 @@ namespace ControllerMapper
 		}
 		return false;	// not the same
 	}
-
-	//size_t ButtonCombo::Hash()
-	//{
-	//	return HawtLib::Crypto::DJB2(m_XMLName);	// Hash the xml name
-	//}
-
-	//size_t ButtonCombo::Hash() const
-	//{
-	//	return HawtLib::Crypto::DJB2(m_XMLName);	// Hash the xml name
-	//}
 
 	ButtonCombo::ButtonCombo(ControllerKey key1, ControllerKey key2) : m_Key1(key1), m_Key2(key2) {
 		m_XMLName = "Custom_" + GetControllerKeyXML(key1) + GetControllerKeyXML(key2);

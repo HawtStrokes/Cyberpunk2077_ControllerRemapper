@@ -1,6 +1,5 @@
 #include "ButtonSingle.h"
-
-#include <HawtLib/Crypto/Hashing.h>
+// #include <HawtLib/Crypto/Hashing.h>
 
 namespace ControllerMapper
 {
@@ -17,16 +16,6 @@ namespace ControllerMapper
 		}
 		return false;	// not the same
 	}
-
-	//size_t ButtonSingle::Hash()
-	//{
-	//	return HawtLib::Crypto::DJB2(m_XMLName);	// Hash the xml name
-	//}
-
-	//size_t ButtonSingle::Hash() const
-	//{
-	//	return HawtLib::Crypto::DJB2(m_XMLName);	// Hash the xml name
-	//}
 
 	ButtonSingle::ButtonSingle(ControllerKey key) : m_Key(key) {
 		m_XMLName = GetControllerKeyXML(key);

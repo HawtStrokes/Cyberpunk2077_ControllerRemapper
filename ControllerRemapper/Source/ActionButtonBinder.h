@@ -17,16 +17,23 @@ namespace  ControllerMapper {
 		~ActionButtonBinder();
 
 	public:
-		void BuildXML(const std::string& file);
-		//void Bind(Action*, IButton*&&);
-		void Bind(Action*, std::shared_ptr<IButton>);
-		void _CleanUp();
-		std::unordered_map<Action*, std::shared_ptr<IButton>>& GetBinds();
+		// Returns static instance of class ABB
+		static ActionButtonBinder& Get();
 
+		// Builds XML to FileLocation
+		void BuildXML(const std::string& file);
+
+		// Binds button shared_ptr to Action*
+		void Bind(Action*, std::shared_ptr<IButton>);
+
+		// Deletes Action_ptrs
+		void _CleanUp();
+
+		// returns binds hash map
+		std::unordered_map<Action*, std::shared_ptr<IButton>>& GetBinds();
 
 		friend class PersistenceManager;
 
-		static ActionButtonBinder& Get();
 	};
 }
 

@@ -50,10 +50,6 @@ namespace ControllerMapper {
 	public:
 		virtual bool operator==(const IButton* other) const = 0;
 		virtual std::string GetXMLName() = 0;
-		//virtual void SetXMLName(const std::string& xmlName) = 0;
-		//virtual size_t Hash() = 0;
-		//virtual size_t Hash() const = 0;
-
 		virtual ~IButton() = default;
 	};
 }

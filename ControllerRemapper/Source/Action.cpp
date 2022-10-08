@@ -6,8 +6,180 @@
 
 namespace ControllerMapper
 {
-	// CharacterAction //
+	unsigned int CharacterAction::Internal_GetSupportedOptions() {
+		switch (actionType) {
+		case ActionType::Cyberware:
+			return OPTIONS_CYBERWARE;
+		case ActionType::CombatGadget:
+			return OPTIONS_COMBATGADGET;
+		case ActionType::Consumable:
+			return OPTIONS_CONSUMABLE;
 
+		case ActionType::Jump:
+			return OPTIONS_JUMP;
+		case ActionType::Crouch:
+			return OPTIONS_CROUCH;
+		case ActionType::Dodge:
+			return OPTIONS_DODGE;
+		case ActionType::Sprint:
+			return OPTIONS_SPRINT;
+
+		case ActionType::Phone:
+			return OPTIONS_SPRINT;
+		case ActionType::CallCar:
+			return OPTIONS_CALLCAR;
+
+		case ActionType::Scan:
+			return OPTIONS_SCAN;
+		case ActionType::Tag:
+			return OPTIONS_TAG;
+
+		case ActionType::Choice1:
+			return OPTIONS_CHOICE1;
+		case ActionType::Choice2:
+			return OPTIONS_CHOICE2;
+
+		case ActionType::Notification:
+			return OPTIONS_NOTIFICATION;
+
+		case ActionType::CycleWeapons:
+			return OPTIONS_CYCLEWEAPONS;
+		case ActionType::PreviousWeapon:
+			return OPTIONS_PREVIOUSWEAPON;
+		case ActionType::QuickMelee:
+			return OPTIONS_QUICKMELEE;
+		case ActionType::Reload:
+			return OPTIONS_RELOAD;
+		}
+	}
+
+	CharacterAction::CharacterAction(ActionType actionType)
+	{
+		this->actionType = actionType;
+		supportedOptions = Internal_GetSupportedOptions();
+	}
+
+	///
+	///	Actions
+	///
+
+	// returns true if all actions are supported and there are no conflicts found
+	bool Action::Internal_VerifyActionSupport(CharacterAction characterAction, CharacterOptions characterOptions) {
+		// returns true if options are supported
+		auto CheckOptionSupport = [&]() -> bool {
+			if ((characterAction.supportedOptions | characterOptions.options) == characterAction.supportedOptions) return true;	// options supported
+			else return false;	// optionList not supported
+		};
+
+		// returns true there are no conflicting and/or missing options
+		auto CheckConflictingOptions = [&]() -> bool {
+			// 11 11	->	Nibble
+			// A   B
+			// resuls each half of a nibble must strictly not be 11 (3_Base_10) or 00
+
+			const unsigned int yA = characterOptions.options >> 2;															// get last two bits
+			const unsigned int yB = static_cast<unsigned>(static_cast<unsigned char>(characterOptions.options << 6)) >> 6;	// get first two bits
+
+			if (yA == 3 || yA == 0 || yB == 3 || yB == 0) {
+				return false;	// Conflicting Options or lack of options detected
+			}
+			else
+			{
+				return true;	// No Conflicts
+			}
+
+		};
+		return CheckOptionSupport() && CheckConflictingOptions();
+	}
+
+	void Action::Internal_CreateXMLCodeBlock(CharacterAction characterAction, CharacterOptions characterOptions, bool checkSupport) {
+		if (checkSupport) {
+			if(!Internal_VerifyActionSupport(characterAction, characterOptions))
+			{
+				throw InvalidCharacterOptions();
+			}
+		}
+		// Fill XMLCodeBlocks with corresponsing content (still requires formatting to fill in keyName and actionName)
+		m_XMLCode = {GetXMLBlock(characterAction.actionType), [&]()->std::string
+		{
+			if (IsDoubleTapEnabled(characterOptions)) return R"(<multitap action="{}" count="2" uptime="0.2" downtime="0.2" />)";
+			else return "";
+		}()};
+	}
+
+	CharacterAction Action::GetCharacterAction() const
+	{
+		return m_CharacterAction;
+	}
+
+	CharacterAction Action::GetCharacterAction()
+	{
+		return m_CharacterAction;
+	}
+
+	CharacterOptions Action::GetCharacterOptions() const
+	{
+		return m_CharacterOptions;
+	}
+
+	CharacterOptions Action::GetCharacterOptions()
+	{
+		return m_CharacterOptions;
+	}
+
+
+	Action::Action(CharacterAction characterAction, CharacterOptions characterOptions) : m_CharacterAction(characterAction), m_CharacterOptions(characterOptions)
+	{
+		// XML Built in the function who called this ctor
+	}
+
+	Action Action::BuildAction(CharacterAction characterAction, CharacterOptions characterOptions)
+	{
+		// Verifty Action Support and init
+		if(Internal_VerifyActionSupport(characterAction, characterOptions))
+		{
+			Action action {characterAction, characterOptions};
+			action.Internal_CreateXMLCodeBlock(characterAction, characterOptions);
+			return action;
+		}
+		else throw InvalidCharacterOptions();
+	}
+
+	Action* Action::BuildActionPtr(CharacterAction characterAction, CharacterOptions characterOptions) {
+		// Verifty Action Support and init
+		if (Internal_VerifyActionSupport(characterAction, characterOptions)) {
+			auto* action = new Action{ characterAction, characterOptions };
+			action->Internal_CreateXMLCodeBlock(characterAction, characterOptions);
+			return action;
+		}
+		else throw InvalidCharacterOptions();
+	}
+
+	std::string Action::GetXMLCodeUM()
+	{
+		return m_XMLCode.UM;
+	}
+
+	std::string Action::GetXMLCodeIC()
+	{
+		return m_XMLCode.IC;
+	}
+
+	XMLCode Action::GetXMLCode()
+	{
+		return m_XMLCode;
+	}
+
+
+	///
+	/// Utility Functions
+	///
+
+	// Checks if double tap is enabled
+	bool IsDoubleTapEnabled(CharacterOptions characterOptions) {
+		// Read first bit (which is either a 1 or 0)
+		return (static_cast<unsigned>(static_cast<unsigned char>(characterOptions.options << 7)) >> 7);
+	}
 	std::string GetXMLBlock(CharacterAction::ActionType actionType) {
 		static std::unordered_map <CharacterAction::ActionType, std::string> xmlBlockMap = {
 			{CharacterAction::ActionType::Cyberware,		R"(<mapping name="IconicCyberware_Button" type="Button" >
@@ -38,7 +210,7 @@ namespace ControllerMapper
 		<button id="IK_Pad_B_CIRCLE" />
 		<button id="IK_LControl" overridableUI="crouchHold"/>
 		<button id="IK_C" overridableUI="crouchToggle"/>
-    </mapping>)"},	
+    </mapping>)"},
 			{CharacterAction::ActionType::Sprint,		R"(<mapping name="Sprint_Button" type="Button" >
     	<button id="{}" overridableUI="sprintHold"/>
     </mapping>
@@ -107,7 +279,7 @@ namespace ControllerMapper
 	}
 
 	std::string GetXMLActionName(CharacterAction::ActionType actionType, bool isToggle) {
-		
+
 		static std::unordered_map<CharacterAction::ActionType, std::string> xmlActionNameMap = {
 			{CharacterAction::ActionType::Cyberware, "IconicCyberware_Button"},
 			{CharacterAction::ActionType::CombatGadget, "CombatGadget_Button"},
@@ -134,8 +306,8 @@ namespace ControllerMapper
 
 			{CharacterAction::ActionType::Reload, "Reload_Button"}
 		};
-		
-			// check if action supports toggle
+
+		// check if action supports toggle
 		if (actionType == CharacterAction::ActionType::Crouch || actionType == CharacterAction::ActionType::Sprint || actionType == CharacterAction::ActionType::Scan) {
 			std::istringstream iss(xmlActionNameMap.at(actionType));
 			std::string line;
@@ -145,183 +317,11 @@ namespace ControllerMapper
 				if (i == returnIdx) return line;
 			}
 		}
-		else if (!isToggle)
-		{
+		else if (!isToggle) {
 			return xmlActionNameMap.at(actionType);
 		}
 
 		throw InvalidCharacterOptions();	// we can't have any more actions that support toggle because of the first branch
-	}
-
-	unsigned int CharacterAction::Internal_GetSupportedOptions() {
-		switch (actionType) {
-		case ActionType::Cyberware:
-			return OPTIONS_CYBERWARE;
-		case ActionType::CombatGadget:
-			return OPTIONS_COMBATGADGET;
-		case ActionType::Consumable:
-			return OPTIONS_CONSUMABLE;
-
-		case ActionType::Jump:
-			return OPTIONS_JUMP;
-		case ActionType::Crouch:
-			return OPTIONS_CROUCH;
-		case ActionType::Dodge:
-			return OPTIONS_DODGE;
-		case ActionType::Sprint:
-			return OPTIONS_SPRINT;
-
-		case ActionType::Phone:
-			return OPTIONS_SPRINT;
-		case ActionType::CallCar:
-			return OPTIONS_CALLCAR;
-
-		case ActionType::Scan:
-			return OPTIONS_SCAN;
-		case ActionType::Tag:
-			return OPTIONS_TAG;
-
-		case ActionType::Choice1:
-			return OPTIONS_CHOICE1;
-		case ActionType::Choice2:
-			return OPTIONS_CHOICE2;
-
-		case ActionType::Notification:
-			return OPTIONS_NOTIFICATION;
-
-		case ActionType::CycleWeapons:
-			return OPTIONS_CYCLEWEAPONS;
-		case ActionType::PreviousWeapon:
-			return OPTIONS_PREVIOUSWEAPON;
-		case ActionType::QuickMelee:
-			return OPTIONS_QUICKMELEE;
-		case ActionType::Reload:
-			return OPTIONS_RELOAD;
-
-		default:
-			return 0;
-		}
-	}
-
-	CharacterAction::CharacterAction(ActionType actionType)
-	{
-		this->actionType = actionType;
-		supportedOptions = Internal_GetSupportedOptions();
-	}
-
-
-	// Actions //
-
-	// returns true if all actions are supported and there are no conflicts found
-	bool Action::Internal_VerifyActionSupport(CharacterAction characterAction, CharacterOptions characterOptions) {
-		// returns true if options are supported
-		auto CheckOptionSupport = [&]() -> bool {
-			if ((characterAction.supportedOptions | characterOptions.options) == characterAction.supportedOptions) return true;	// options supported
-			else return false;	// optionList not supported
-		};
-
-		// returns true there are no conflicting and/or missing options
-		auto CheckConflictingOptions = [&]() -> bool {
-			// 11 11	->	Nibble
-			// A   B
-			// resuls each half of a nibble must strictly not be 11 (3_Base_10) or 00
-
-			const unsigned int yA = characterOptions.options >> 2;															// get last two bits
-			const unsigned int yB = static_cast<unsigned>(static_cast<unsigned char>(characterOptions.options << 6)) >> 6;	// get first two bits
-
-			if (yA == 3 || yA == 0 || yB == 3 || yB == 0) {
-				return false;	// Conflicting Options or lack of options detected
-			}
-			else
-			{
-				return true;	// No Conflicts
-			}
-
-		};
-		return CheckOptionSupport() && CheckConflictingOptions();
-	}
-
-	void Action::Internal_CreateXMLCodeBlock(CharacterAction characterAction, CharacterOptions characterOptions, bool checkSupport) {
-		if (checkSupport) {
-			if(!Internal_VerifyActionSupport(characterAction, characterOptions))
-			{
-				throw InvalidCharacterOptions();
-			}
-		}
-		// Fill XMLCodeBlocks with corresponsing content (still requires formatting to fill in keyName and actionName)
-		m_XMLCode = {GetXMLBlock(characterAction.actionType), [&]()->std::string
-		{
-			if (IsDoubleTapEnabled(characterOptions)) return R"(<multitap action="{}" count="2" uptime="0.2" downtime="0.2" />)";
-			else return "";
-		}()};
-	}
-
-	CharacterAction Action::GetCharacterAction() const
-	{
-		return m_CharacterAction;
-	}
-
-	CharacterAction Action::GetCharacterAction()
-	{
-		return m_CharacterAction;
-	}
-
-	CharacterOptions Action::GetOptions() const
-	{
-		return m_Options;
-	}
-
-	CharacterOptions Action::GetOptions()
-	{
-		return m_Options;
-	}
-
-
-	Action::Action(CharacterAction characterAction, CharacterOptions characterOptions) : m_CharacterAction(characterAction), m_Options(characterOptions)
-	{
-		// XML Built in the function who called this ctor
-	}
-
-	Action Action::BuildAction(CharacterAction characterAction, CharacterOptions characterOptions)
-	{
-		// Verifty Action Support and init
-		if(Internal_VerifyActionSupport(characterAction, characterOptions))
-		{
-			Action action {characterAction, characterOptions};
-			action.Internal_CreateXMLCodeBlock(characterAction, characterOptions);
-			return action;
-		}
-		else throw InvalidCharacterOptions();
-	}
-
-	Action* Action::BuildActionPtr(CharacterAction characterAction, CharacterOptions characterOptions) {
-		// Verifty Action Support and init
-		if (Internal_VerifyActionSupport(characterAction, characterOptions)) {
-			auto* action = new Action{ characterAction, characterOptions };
-			action->Internal_CreateXMLCodeBlock(characterAction, characterOptions);
-			return action;
-		}
-		else throw InvalidCharacterOptions();
-	}
-
-	std::string Action::GetXMLCodeUM()
-	{
-		return m_XMLCode.UM;
-	}
-
-	std::string Action::GetXMLCodeIC()
-	{
-		return m_XMLCode.IC;
-	}
-
-	XMLCode Action::GetXMLCode()
-	{
-		return m_XMLCode;
-	}
-
-	bool IsDoubleTapEnabled(CharacterOptions characterOptions) {
-		// Read first bit (which is either a 1 or 0)
-		return (static_cast<unsigned>(static_cast<unsigned char>(characterOptions.options << 7)) >> 7);
 	}
 }
 

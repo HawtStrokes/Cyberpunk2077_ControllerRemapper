@@ -1,5 +1,4 @@
 #pragma once
-#include <optional>
 #include <string>
 
 #include "SharedTypes.h"
@@ -93,37 +92,54 @@ namespace ControllerMapper
 
 	private:
 		CharacterAction m_CharacterAction;
-		CharacterOptions m_Options;
+		CharacterOptions m_CharacterOptions;
 		XMLCode m_XMLCode;
 
 
 	public:
-
 		Action(const Action&) = default;
 		Action& operator= (const Action&) = default;
-		//Action(const Action&&) = default;
-		//Action& operator= (const Action&&) = default;
 		~Action() = default;
 
+	public:
+		// Get Character Action
 		CharacterAction GetCharacterAction() const;
+		// Get Character Action
 		CharacterAction GetCharacterAction();
 
-		CharacterOptions GetOptions() const;
-		CharacterOptions GetOptions();
 
+		// Get Character Options
+		CharacterOptions GetCharacterOptions() const;
+		// Get Character Options
+		CharacterOptions GetCharacterOptions();
+
+
+		// build action and return copy
 		static Action BuildAction(CharacterAction, CharacterOptions);
+		// build action in heap and return pointer
 		static Action* BuildActionPtr(CharacterAction, CharacterOptions);
 
+
+		// Get UM xml block
 		std::string GetXMLCodeUM();
+
+		// Get IC xml block
 		std::string GetXMLCodeIC();
+
+		// Get both UM and IC as an entire struct
 		XMLCode GetXMLCode();
 
 	public:
 		//static bool Static_DoubleTapEnabled(CharacterOptions characterOptions);
 	};
 
-	bool IsDoubleTapEnabled(CharacterOptions characterOptions);
-	std::string GetXMLBlock(CharacterAction::ActionType actionType);
-	std::string GetXMLActionName(CharacterAction::ActionType actionType, bool isToggle = false);
 
+	// Checks if double tap is enabled
+	bool IsDoubleTapEnabled(CharacterOptions characterOptions);
+
+	// Get XML Block to be appended to baseUM
+	std::string GetXMLBlock(CharacterAction::ActionType actionType);
+
+	// Get the associated xml action name to be formatted into an xml block
+	std::string GetXMLActionName(CharacterAction::ActionType actionType, bool isToggle = false);
 }

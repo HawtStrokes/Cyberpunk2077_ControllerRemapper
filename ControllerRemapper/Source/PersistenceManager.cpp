@@ -1,15 +1,3 @@
-#include <filesystem>
-
-#include "ActionButtonBinder.h"
-#include "PersistenceManager.h"
-#include "ButtonSingle.h"
-#include "ButtonCombo.h"
-#include "Action.h"
-#include "Exceptions.h"
-
-#include "HawtLib/File/File.h"
-#include "HawtLib/Text/TextFormatting.h"
-
 ///	###Sample INI Config:
 ///	[(int) ActionType]
 ///	options = CharacterOptions
@@ -30,45 +18,96 @@
 ///	What we need:
 ///	ActionType as section (1), KeyValues: options = CharacterOptions, isCombo = true/false, keys...
 
+
+#include <filesystem>
+
+#include "ActionButtonBinder.h"
+#include "PersistenceManager.h"
+#include "ButtonSingle.h"
+#include "ButtonCombo.h"
+#include "Action.h"
+#include "Exceptions.h"
+
+#include "HawtLib/File/File.h"
+
 namespace ControllerMapper {
 
-	PersistenceManager::PersistenceManager() : m_SaveDir("Saves/") {
+
+	// Private Ctor
+	PersistenceManager::PersistenceManager() : m_SaveDir("Saves"), m_NumberOfSaves(0) {
 		UpdateSaveCount();
 	}
 
-	void PersistenceManager::UpdateSaveCount() {
-		int saveCount = 0;
-		for (auto& entry : std::filesystem::directory_iterator(std::filesystem::path(m_SaveDir))) {
-			if (entry.is_directory()) {
-				++saveCount;
-			}
-		}
-		m_NumberOfSaves = saveCount;
+	// Return Static Instance
+	PersistenceManager& PersistenceManager::Get() {
+		static PersistenceManager instance;
+		return instance;
 	}
 
-	bool PersistenceManager::Internal_VerifyGameDir(const std::string& gameDir) {
+	// Updates save counts
+	void PersistenceManager::UpdateSaveCount() {
+		m_NumberOfSaves = 0;
+		for (auto& entry : std::filesystem::directory_iterator(std::filesystem::path(m_SaveDir))) {
+			if (entry.is_directory()) {
+				++m_NumberOfSaves;
+			}
+		}
+	}
+
+
+	///
+	///	INTERNALS
+	///
+
+	// Throw if string is empty
+	inline void PersistenceManager::Internal_ThrowEmpty(const std::string& str)
+	{
+		if (str.empty()) throw std::runtime_error("Input Must Not Be Empty");
+	}
+
+	// Throw if config is empty or has folders
+	inline void PersistenceManager::Internal_ThrowCheckConfig(const std::string& configName) {
+		Internal_ThrowEmpty(configName);
+		if (Internal_IsDir(configName)) throw DirectoryIsDisallowed();
+	}
+
+	// Shallowly checks if dir is indeed cp2077 dir
+	inline bool PersistenceManager::Internal_VerifyGameDir(const std::string& gameDir) {
 		if (!std::filesystem::exists(gameDir + R"(/REDprelauncher.exe)") &&
 			!std::filesystem::exists(gameDir + R"(/bin/x64/Cyberpunk2077.exe)")) return false;
 
 		return true;
 	}
 
-	PersistenceManager& PersistenceManager::Get() {
-		static PersistenceManager instance;
-		return instance;
+	// Creates dirs if they don't exist
+	inline void PersistenceManager::Internal_CheckMakeDir(const std::string& path) {
+		if (!std::filesystem::exists(std::filesystem::path(path))) {
+			std::filesystem::create_directories(std::filesystem::path(path));
+		}
 	}
+
+	// Checks if param is a dir
+	inline bool PersistenceManager::Internal_IsDir(const std::string& path) {
+		if (path.find('\\') != std::string::npos || path.find('/') != std::string::npos) return true;
+		return false;
+	}
+
+
+	///
+	///	Core Persistence Functionalities
+	///
 
 	// Saves current config as Ini
 	void PersistenceManager::Save(const std::string& configName) {	// Make Ini File
+		Internal_ThrowCheckConfig(configName);
 		HawtLib::File::IniFile iniFile;
-		auto x = ActionButtonBinder::Get().m_Binds;
-		for (const auto& kv : x) {
+		for (const auto& kv : ActionButtonBinder::Get().m_Binds) {
 			// Use Action integer equivalent as section name
 			std::string sectionName = std::to_string(static_cast<unsigned int>(kv.first->GetCharacterAction().actionType));
 
 			iniFile.CreateSection(sectionName);	// Create the section
 			iniFile.AddKeyValue(sectionName,	// Add options
-					"options", std::to_string(kv.first->GetOptions().options));
+					"options", std::to_string(kv.first->GetCharacterOptions().options));
 
 			const auto btnSPtr = dynamic_cast<ButtonSingle*>(kv.second.get());
 			if (btnSPtr != nullptr) {
@@ -84,29 +123,19 @@ namespace ControllerMapper {
 					.AddKeyValue(sectionName, "key2", std::to_string(static_cast<unsigned>(btnCPtr->GetKey2())));
 			}
 		}
+
 		const std::string outPutDir = m_SaveDir + "/" + configName;
-
-
-		if (!std::filesystem::exists(std::filesystem::path(outPutDir)))
-		{
-			auto vecDir = HawtLib::Text::SplitString(outPutDir, '/');
-			std::string buffer;
-			for (auto& dir : vecDir)
-			{
-				buffer += dir + "/";
-				std::filesystem::create_directory(std::filesystem::path(buffer));
-			}
-		}
-			
-
+		Internal_CheckMakeDir(outPutDir);
 		iniFile.Save(outPutDir + "/config.ini");	// save the ini File in $(SaveDir)\$(saveCount)\config.ini
-		// UpdateSaveCount();	// update save count
+		UpdateSaveCount();	// update save count
 	}
 
 	// Loads a configuratin ini and update Binds
 	void PersistenceManager::Load(const std::string& configName) {
-		std::string outPutDir = m_SaveDir + "/" + configName + "/";
-		if (!std::filesystem::exists(std::filesystem::path(outPutDir)) && !std::filesystem::exists(std::filesystem::path(outPutDir + "/config.ini"))) {
+		Internal_ThrowCheckConfig(configName);
+
+		const std::string outPutDir = m_SaveDir + "/" + configName;
+		if (!std::filesystem::exists(std::filesystem::path(outPutDir + "/config.ini"))) {
 			throw ConfigurationDoesNotExist();
 		}
 
@@ -118,7 +147,7 @@ namespace ControllerMapper {
 		ActionButtonBinder::Get().m_Binds.clear();	// clear the map
 
 		// Loop through each section
-		for (const auto sectionName : sectionNames) {
+		for (const auto& sectionName : sectionNames) {
 			bool isCombo = false;
 			struct
 			{
@@ -131,11 +160,11 @@ namespace ControllerMapper {
 			} keys = { {ControllerKey::None}, ControllerKey::None };
 
 
-			CharacterAction characterAction = static_cast<CharacterAction::ActionType>(std::stoi(sectionName));
+			const CharacterAction characterAction = static_cast<CharacterAction::ActionType>(std::stoi(sectionName));
 			CharacterOptions characterOption = CharacterOptions(0);
 
 			// Loop through each keyVal in Section and update local vars
-			for (auto kV : iniFile.GetSectionKV(sectionName)->keyValues) {
+			for (const auto kV : iniFile.GetSectionKV(sectionName)->keyValues) {
 				if (kV->key == "isCombo") {
 					if (kV->value == "true") {
 						isCombo = true;
@@ -188,7 +217,9 @@ namespace ControllerMapper {
 	}
 
 	void PersistenceManager::Delete(const std::string& configName) {
-		std::filesystem::remove_all(std::filesystem::path(m_SaveDir + "/" + configName + "/"));
+		Internal_ThrowCheckConfig(configName);
+		std::filesystem::remove_all(std::filesystem::path(m_SaveDir + "/" + configName));
+		UpdateSaveCount();
 	}
 
 	// Applies custom binds to game
@@ -196,19 +227,33 @@ namespace ControllerMapper {
 		ActionButtonBinder::Get().BuildXML(m_GameDir + R"(\r6\config\)");
 	}
 
+
+	///
+	///	SETTERS
+	///
+
 	// Set Game directory
 	void PersistenceManager::SetGameDir(const std::string& gameDir) {
 		if (!Internal_VerifyGameDir(gameDir)) throw InvalidGameDir();
-		else m_GameDir = gameDir + "/";
+		else m_GameDir = gameDir;
 	}
 
+	// Set Save directory
 	void PersistenceManager::SetSaveDir(const std::string& saveDir) {
-		m_SaveDir = saveDir + "/";
+		Internal_ThrowEmpty(saveDir);
+		m_SaveDir = saveDir;
 	}
 
+	// Set Loaded Save
 	void PersistenceManager::SetLoadedSave(const std::string& configName) {
+		if (Internal_IsDir(configName)) throw DirectoryIsDisallowed();
 		m_LoadedSave = configName;
 	}
+
+
+	///
+	///	GETTERS
+	///
 
 	// Get Game directory
 	std::string PersistenceManager::GetGameDir() {
