@@ -1,7 +1,7 @@
-#include "../../../Text/TextFormatting.h"
+#include "../../Text/TextFormatting.h"
 #include "IniParser.h"
-#include "../IniFile.h"
-#include "../../FileExceptions.h"
+#include "IniFile.h"
+#include "../FileExceptions.h"
 
 #include <fstream>
 //#include <exception>

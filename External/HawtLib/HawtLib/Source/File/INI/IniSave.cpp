@@ -4,7 +4,7 @@
 #include "fmt/format.h"
 
 #include "IniSave.h"
-#include "../IniFile.h"
+#include "IniFile.h"
 
 namespace HawtLib {
 	namespace File {

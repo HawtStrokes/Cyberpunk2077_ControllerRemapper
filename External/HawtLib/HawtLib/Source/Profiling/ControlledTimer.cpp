@@ -1,22 +1,23 @@
 #include "ControlledTimer.h"
-#include <iostream>
+
+#include <chrono>
 
 namespace HawtLib {
 	namespace Profiling {
-		inline void ControlledTimer::_Start() noexcept {
+		inline void ControlledTimer::Internal_Start() {
 			startTime = std::chrono::high_resolution_clock::now();
 		}
 
-		inline void ControlledTimer::_Stop() noexcept {
+		inline void ControlledTimer::Internal_Stop() {
 			duration = static_cast<float>((std::chrono::high_resolution_clock::now() - startTime).count());
 		}
 
 		void ControlledTimer::Start() {
-			_Start();
+			Internal_Start();
 		}
 
 		void ControlledTimer::Stop() {
-			_Stop();
+			Internal_Stop();
 		}
 
 		float ControlledTimer::GetDuration() const {

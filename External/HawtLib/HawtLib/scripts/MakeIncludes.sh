@@ -1,16 +1,16 @@
 #! /bin/bash
 
-if [ ! -d "../Build/includes" ]
+if [ ! -d "../Build/Includes" ]
 then
   echo "Creating Include Directory..."
-  mkdir ../Build/includes
+  mkdir ../Build/Includes
 else
     echo "Directory exists"
     echo "Removing Old Files..."
-    rm -rf ../Build/includes/ && mkdir ../Build/includes
+    rm -rf ../Build/Includes/ && mkdir ../Build/Includes
 fi
 
 
 echo "Adding Header Files..."
-cp -r ../HawtLib/Source ../Build/includes/HawtLib && find ../Build/includes/HawtLib -type f ! -iname '*.h' -delete
+cp -r ../Source ../Build/Includes/HawtLib && find ../Build/Includes/HawtLib -type f ! -iname '*.h' -delete
 echo "Done!"

@@ -1,4 +1,5 @@
 #include "TextFormatting.h"
+#include "TextExceptions.h"
 
 namespace HawtLib {
 	namespace Text {
@@ -6,8 +7,7 @@ namespace HawtLib {
 		// Text Alignments
 		std::string CenterText(const std::string& inStr, size_t space) {
 			if (space < inStr.size()) {
-				printf("space must be atleast euqal to str size");
-				__debugbreak();
+				throw SmallStringBufferError();
 			}
 			 return std::string((space - inStr.size()) / 2, ' ') 
 				 + inStr + std::string(space - inStr.size() - ((space - inStr.size()) / 2), ' ');
@@ -15,8 +15,7 @@ namespace HawtLib {
 
 		std::string RightText(const std::string& inStr, size_t space) {
 			if (space < inStr.size()) {
-				printf("space must be atleast euqal to str size");
-				__debugbreak();
+				throw SmallStringBufferError();
 			}
 			return std::string(space - inStr.size(), ' ') + inStr;
 		}
@@ -24,7 +23,7 @@ namespace HawtLib {
 
 		// Text Casings
 		std::string ToLower(const std::string& inStr) {
-			std::string outStr = "";
+			std::string outStr;
 			for (char c : inStr) {
 				if (c <= 90 && c >= 65) c += 32;
 				outStr += c;
@@ -52,7 +51,7 @@ namespace HawtLib {
 		}
 
 		std::string Title(const std::string& inStr) {
-			std::string outStr = "";
+			std::string outStr;
 			std::vector<std::string> words = SplitString(inStr);
 			for (auto& word : words) {
 				word[0] = ToUpper(word[0]);
@@ -66,8 +65,9 @@ namespace HawtLib {
 
 		std::vector<std::string> SplitString(const std::string& inStr, char delim) {
 			std::vector<std::string> outVec;
-			std::string word = "";
-			for (char c : inStr) {
+			std::string word;
+			// TODO: consider using std::string::find
+			for (const char c : inStr) {
 				if (c != delim) word += c;
 				else {
 					outVec.emplace_back(word);

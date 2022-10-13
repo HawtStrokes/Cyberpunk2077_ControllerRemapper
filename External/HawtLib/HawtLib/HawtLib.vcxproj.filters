@@ -16,88 +16,82 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
-    <None Include="HawtLib\Docs\docs.html" />
-    <None Include="HawtLib\Docs\hawtlib.html" />
-    <None Include="HawtLib\Docs\index.html" />
+    <None Include="Docs\docs.html" />
+    <None Include="Docs\hawtlib.html" />
+    <None Include="Docs\index.html" />
     <None Include="HawtLibDemo\iniSample.ini" />
-    <None Include="scripts\MakeIncludes.bat">
+    <None Include="Scripts\MakeIncludes.bat">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="scripts\MakeIncludes.sh" />
+    <None Include="Scripts\MakeIncludes.sh" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HawtLib\Source\Crypto\Hashing.cpp">
+    <ClCompile Include="Source\Crypto\Hashing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HawtLib\Source\Profiling\ControlledTimer.cpp">
+    <ClCompile Include="Source\Profiling\ControlledTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HawtLib\Source\Profiling\RAIITimer.cpp">
+    <ClCompile Include="Source\Profiling\RAIITimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HawtLib\Source\Tables\Card.cpp">
+    <ClCompile Include="Source\Text\TextFormatting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HawtLib\Source\Tables\Table.cpp">
+    <ClCompile Include="Source\File\INI\IniFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HawtLib\Source\Text\TextFormatting.cpp">
+    <ClCompile Include="Source\File\INI\IniParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HawtLib\Source\File\INI\IniFile.cpp">
+    <ClCompile Include="Source\File\INI\IniSave.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HawtLib\Source\File\INI\Parsing\IniParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HawtLib\Source\File\INI\Persistence\IniSave.cpp">
+    <ClCompile Include="Source\Table\Table.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="HawtLib\Source\Crypto\Hashing.h">
+    <ClInclude Include="Source\Crypto\Hashing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HawtLib\Source\Profiling\Interfaces\ITimer.h">
+    <ClInclude Include="Source\Profiling\ControlledTimer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HawtLib\Source\Profiling\ControlledTimer.h">
+    <ClInclude Include="Source\Profiling\HawtProfiling.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HawtLib\Source\Profiling\HawtProfiling.h">
+    <ClInclude Include="Source\Profiling\RAIITimer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HawtLib\Source\Profiling\RAIITimer.h">
+    <ClInclude Include="Source\Text\TextFormatting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HawtLib\Source\Tables\Card.h">
+    <ClInclude Include="Source\HawtLib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HawtLib\Source\Tables\Table.h">
+    <ClInclude Include="Source\File\INI\IniFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HawtLib\Source\Text\TextFormatting.h">
+    <ClInclude Include="Source\File\KeyValue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HawtLib\Source\HawtLib.h">
+    <ClInclude Include="Source\File\INI\IniParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HawtLib\Source\File\INI\IniFile.h">
+    <ClInclude Include="Source\File\File.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HawtLib\Source\File\KeyValue.h">
+    <ClInclude Include="Source\File\INI\IniSave.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HawtLib\Source\File\INI\Parsing\IniParser.h">
+    <ClInclude Include="Source\File\FileExceptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HawtLib\Source\File\File.h">
+    <ClInclude Include="Source\Text\TextExceptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HawtLib\Source\File\INI\Persistence\IniSave.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HawtLib\Source\File\FileExceptions.h">
+    <ClInclude Include="Source\Table\Table.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

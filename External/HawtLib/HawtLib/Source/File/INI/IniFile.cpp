@@ -3,8 +3,8 @@
 #include "fmt/format.h"
 
 #include "IniFile.h"
-#include "Parsing/IniParser.h"
-#include "Persistence/IniSave.h"
+#include "IniParser.h"
+#include "IniSave.h"
 
 namespace HawtLib {
 	namespace File {

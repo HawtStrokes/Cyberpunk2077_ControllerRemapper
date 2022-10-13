@@ -7,6 +7,7 @@
 using namespace HawtLib;
 
 void IniParserDemo() {
+	std::cout << __FUNCTION__ << std::endl;
 	std::ofstream ofs("sample.ini");
 	std::string iniContent = 
 R"(; last modified 1 April 2001 by John Doe
@@ -49,22 +50,19 @@ file = "payroll.dat"
 
 void TableDemo() {
 	std::cout << __FUNCTION__ << std::endl;
-	Tables::Table table;				// Init Table obj
-	table.AddRows(3);					// Set number of rows to three
+	Tables::Table table(1);				// Init Table obj
 
-	table.AddCard("Car Model", 0)		// Header
-		.AddCard("Color", 0)
-		.AddCard("Door Count", 0);
+	table.AddCell("Test", 0, 0)
+		.AddCell("Test", 1, 0)
+		.AddCell("Hello World", 2, 1)
+		.AddCell("WOW", 1, 2)
+		.AddCell("NewTest", 0)
+		.AddCell("NewTest", 0)
+		.AddCell("NewTest", 0)
+		.AddCell("NewTest", 0)
+		.AddCell("NewTest", 11, 5);
 
-	table.AddCard("Dodge Demon", 1)		// Enrtry 1
-		.AddCard("Red", 1)
-		.AddCard("two", 1);
 
-	table.AddCard("Nissan Versa", 2)	// Entry 2
-		.AddCard("Grey", 2)
-		.AddCard("two", 2);
-
-	table.SetTextAlignment(Tables::TxtAlignment::Center);
 	table.PrintTable();			// Print Table
 	std::cin.get();
 }

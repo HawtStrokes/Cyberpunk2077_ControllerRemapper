@@ -1,22 +1,23 @@
 #include "RAIITimer.h"
-#include <iostream>
+
+#include <chrono>
 
 namespace HawtLib {
 	namespace Profiling {
-		inline void RAIITimer::_Start() noexcept {
+		inline void RAIITimer::Internal_Start() {
 			startTime = std::chrono::high_resolution_clock::now();
 		}
 
-		inline void RAIITimer::_Stop() noexcept {
+		inline void RAIITimer::Internal_Stop() {
 			// duration in nanoSeconds
 			*duration = static_cast<float>((std::chrono::high_resolution_clock::now() - startTime).count());	
 		}
 
 		RAIITimer::RAIITimer(float* outDuration) : duration(outDuration) {
-			_Start();
+			Internal_Start();
 		}
 		RAIITimer::~RAIITimer() {
-			_Stop();
+			Internal_Stop();
 		}
 	}
 }

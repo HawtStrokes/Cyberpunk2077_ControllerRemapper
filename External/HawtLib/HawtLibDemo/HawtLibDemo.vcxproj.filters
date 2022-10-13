@@ -15,12 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HawtLibDemo\Source\Demos.cpp">
+    <ClCompile Include="Source\Demos.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="scripts\CopyDLL.bat">
+    <None Include="Scripts\CopyDLL.bat">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

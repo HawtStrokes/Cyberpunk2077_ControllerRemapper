@@ -8,12 +8,12 @@
 #define SPEC __declspec(dllimport)
 #endif
 
-#include "Interfaces/ITimer.h"
+#include <chrono>
 
 namespace HawtLib {
 	namespace Profiling {
 
-		class SPEC ControlledTimer : public ITimer {
+		class SPEC ControlledTimer {
 		private:
 			std::chrono::time_point<std::chrono::high_resolution_clock> startTime;
 			float duration;	// in ns
@@ -24,13 +24,11 @@ namespace HawtLib {
 			~ControlledTimer() = default;
 
 		private:
-			inline void _Start() noexcept override;
+			inline void Internal_Start();
+			inline void Internal_Stop();
 
-			inline void _Stop() noexcept override;
 		public:
-
 			void Start();
-
 			void Stop();
 
 			float GetDuration() const;

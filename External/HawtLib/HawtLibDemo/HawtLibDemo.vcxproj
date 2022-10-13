@@ -162,10 +162,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="HawtLibDemo\Source\Demos.cpp" />
+    <ClCompile Include="Source\Demos.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="scripts\CopyDLL.bat" />
+    <None Include="Scripts\CopyDLL.bat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

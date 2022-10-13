@@ -22,7 +22,7 @@ No premake support yet.
 4. **Crypto** – Cryptograhic library
 5. **File** – File parsing and creation library
 
-A demo usage of each library can be seen in [HawtStrokes/HawtLibDemo](https://github.com/HawtStrokes/HawtLib/tree/master/HawtLibDemo/HawtLibDemo/Source).
+A demo usage of each library can be seen in [HawtStrokes/HawtLibDemo](https://github.com/HawtStrokes/HawtLib/tree/master/HawtLibDemo/Source).
 
 ## **Documentations**
 None as of yet.
