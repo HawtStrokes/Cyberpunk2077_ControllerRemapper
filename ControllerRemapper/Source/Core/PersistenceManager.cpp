@@ -27,6 +27,7 @@
 #include "ButtonCombo.h"
 #include "Action.h"
 #include "Exceptions.h"
+#include "../Util/PlatformUtil.h"
 
 #include "HawtLib/File/File.h"
 
@@ -35,6 +36,11 @@ namespace ControllerMapper {
 
 	// Private Ctor
 	PersistenceManager::PersistenceManager() : m_SaveDir("Saves"), m_NumberOfSaves(0) {
+		auto gamePath = Util::GetGamePath();
+		if (gamePath.has_value())
+		{
+			m_GameDir = gamePath.value();
+		}
 		UpdateSaveCount();
 	}
 
@@ -118,13 +124,13 @@ namespace ControllerMapper {
 			else {
 				// Add two controllerkeys
 				const auto btnCPtr = dynamic_cast<ButtonCombo*>(kv.second.get());
-				iniFile.AddKeyValue(sectionName, "isCombo", "false")
+				iniFile.AddKeyValue(sectionName, "isCombo", "true")
 					.AddKeyValue(sectionName, "key1", std::to_string(static_cast<unsigned>(btnCPtr->GetKey1())))
 					.AddKeyValue(sectionName, "key2", std::to_string(static_cast<unsigned>(btnCPtr->GetKey2())));
 			}
 		}
 
-		const std::string outPutDir = m_SaveDir + "/" + configName;
+		const std::string outPutDir = m_SaveDir + "/" + configName + "/";
 		Internal_CheckMakeDir(outPutDir);
 		iniFile.Save(outPutDir + "/config.ini");	// save the ini File in $(SaveDir)\$(saveCount)\config.ini
 		UpdateSaveCount();	// update save count
@@ -134,7 +140,7 @@ namespace ControllerMapper {
 	void PersistenceManager::Load(const std::string& configName) {
 		Internal_ThrowCheckConfig(configName);
 
-		const std::string outPutDir = m_SaveDir + "/" + configName;
+		const std::string outPutDir = m_SaveDir + "/" + configName + "/";
 		if (!std::filesystem::exists(std::filesystem::path(outPutDir + "/config.ini"))) {
 			throw ConfigurationDoesNotExist();
 		}
@@ -143,8 +149,8 @@ namespace ControllerMapper {
 		HawtLib::File::IniFile iniFile(outPutDir + "config.ini");
 		const auto sectionNames = iniFile.GetSectionNames();
 
-		//ActionButtonBinder::Get()._CleanUp();		// delete heap allocated stuff
-		ActionButtonBinder::Get().m_Binds.clear();	// clear the map
+		//ActionButtonBinder::Get().Internal_CleanUp();		// delete heap allocated stuff
+		// ActionButtonBinder::Get().m_Binds.clear();	// clear the map
 
 		// Loop through each section
 		for (const auto& sectionName : sectionNames) {
@@ -179,41 +185,35 @@ namespace ControllerMapper {
 				else if (kV->key == "options") {
 					characterOption.options = static_cast<unsigned int>(std::stoi(kV->value));
 				}
-				else if (kV->key == "key1" && isCombo) {
+				else if (kV->key == "key1") {
 					keys.key1 = static_cast<ControllerKey>(std::stoi(kV->value));
 				}
-				else if (kV->key == "key2" && isCombo) {
+				else if (kV->key == "key2") {
 					keys.key2 = static_cast<ControllerKey>(std::stoi(kV->value));
 				}
-				else if (kV->key == "key" && !isCombo) {
+				else if (kV->key == "key") {
 					keys.key = static_cast<ControllerKey>(std::stoi(kV->value));
 				}
 			}
 
 			// After looping through each keyVal, bind an action to a button
-			// Also check if configuration loaded is valid
-			if (characterOption.options != 0 && keys.key1 != ControllerKey::None &&
-				(isCombo? ControllerKey::None != keys.key2 : ControllerKey::None == keys.key2)) {	// if combo and key2 is not null || if !combo and key2 is null
-				try {
-					
-					if (isCombo == true) {
-						//ActionButtonBinder::Get().Bind(Action::BuildActionPtr(characterAction, characterOption), new ButtonCombo(keys.key1, keys.key2));	// Make a bind
-						ActionButtonBinder::Get().Bind(Action::BuildActionPtr(characterAction, characterOption), std::make_shared<ButtonCombo>(keys.key1, keys.key2));
-					}
-					else {
-						ActionButtonBinder::Get().Bind(Action::BuildActionPtr(characterAction, characterOption), std::make_shared<ButtonSingle>(keys.key));	// Make a bind
-					}
+		
+			try {
+				
+				if (isCombo == true) {
+					ActionButtonBinder::Get().Bind(Action::GetActionPtr(characterAction, characterOption), std::make_shared<ButtonCombo>(keys.key1, keys.key2));
 				}
-
-				catch (InvalidCharacterOptions&) {
-					throw ConfigurationCorruptedError();
+				else {
+					ActionButtonBinder::Get().Bind(Action::GetActionPtr(characterAction, characterOption), std::make_shared<ButtonSingle>(keys.key));	// Make a bind
 				}
 			}
-			else {
+
+			catch (InvalidCharacterOptions&) {
 				throw ConfigurationCorruptedError();
 			}
 		}
 
+		Internal_SetLoadedSave(configName);
 	}
 
 	void PersistenceManager::Delete(const std::string& configName) {
@@ -234,8 +234,16 @@ namespace ControllerMapper {
 
 	// Set Game directory
 	void PersistenceManager::SetGameDir(const std::string& gameDir) {
-		if (!Internal_VerifyGameDir(gameDir)) throw InvalidGameDir();
-		else m_GameDir = gameDir;
+		auto gamePath = std::filesystem::path(gameDir);
+		if (!std::filesystem::exists(gamePath)) {
+			if (!std::filesystem::is_directory(gamePath))
+				throw InvalidGameDir("Must be an existing Directory!");
+			throw InvalidGameDir("Must be an existing Directory!");
+		}
+		if (!Internal_VerifyGameDir(gameDir))
+			std::cout << "Warning: Directory doesn't seem to contain binary executables associated with Cyberpunk 2077" << std::endl;
+
+		m_GameDir = gameDir;
 	}
 
 	// Set Save directory
@@ -245,7 +253,7 @@ namespace ControllerMapper {
 	}
 
 	// Set Loaded Save
-	void PersistenceManager::SetLoadedSave(const std::string& configName) {
+	void PersistenceManager::Internal_SetLoadedSave(const std::string& configName) {
 		if (Internal_IsDir(configName)) throw DirectoryIsDisallowed();
 		m_LoadedSave = configName;
 	}
@@ -268,6 +276,41 @@ namespace ControllerMapper {
 	// Get number of saves
 	unsigned PersistenceManager::GetNumberOfSaves() {
 		return m_NumberOfSaves;
+	}
+
+	// returns vector of all config names in saveDir
+	std::vector<std::string> PersistenceManager::GetSaves()
+	{
+		std::vector<std::string> retVec;
+		for (auto& entry : std::filesystem::directory_iterator(std::filesystem::path(m_SaveDir))) {
+			if (entry.is_directory()) {
+				std::string strDir = entry.path().string();
+
+				// if all later checks fail, default is the initialized 0
+				size_t beginIdx = 0;
+				size_t fwdSlashIdx = strDir.rfind('/');
+				size_t bwdSlashIdx = strDir.rfind('\\');
+
+				// check if fwd is npos
+				if (fwdSlashIdx != std::string::npos) {
+					// check if bwd is npos
+					if (bwdSlashIdx != std::string::npos) {
+						beginIdx = std::max(fwdSlashIdx, bwdSlashIdx);	// get bigger number of the two
+					}
+					else {
+						beginIdx = fwdSlashIdx;	// else set idx to the defined
+					}
+				}
+
+				// else check if bwd is npos
+				else if (bwdSlashIdx != std::string::npos)
+					beginIdx = bwdSlashIdx;
+
+
+				retVec.emplace_back(strDir.substr(beginIdx, strDir.size() - beginIdx));
+			}
+		}
+		return retVec;
 	}
 }
 

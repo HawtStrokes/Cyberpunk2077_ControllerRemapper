@@ -40,7 +40,8 @@ namespace ControllerMapper {
 			{ControllerKey::RightTrigger,	"IK_Pad_RightTrigger"},
 			{ControllerKey::LeftTrigger,	"IK_Pad_LeftTrigger"},
 			{ControllerKey::LeftThumb,		"IK_Pad_LeftThumb"},
-			{ControllerKey::RightThumb,		"IK_Pad_A_RightThumb"}
+			{ControllerKey::RightThumb,		"IK_Pad_RightThumb"},
+			{ ControllerKey::None,		"NONE" }
 		};
 		return mapXMLName.at(cK);
 	}

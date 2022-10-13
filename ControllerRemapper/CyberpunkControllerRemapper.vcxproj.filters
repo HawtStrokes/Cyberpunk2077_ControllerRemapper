@@ -18,19 +18,19 @@
     <ClCompile Include="Source\Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\PersistenceManager.cpp">
+    <ClCompile Include="Source\Core\PersistenceManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Action.cpp">
+    <ClCompile Include="Source\Core\Action.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ActionButtonBinder.cpp">
+    <ClCompile Include="Source\Core\ActionButtonBinder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ButtonSingle.cpp">
+    <ClCompile Include="Source\Core\ButtonSingle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ButtonCombo.cpp">
+    <ClCompile Include="Source\Core\ButtonCombo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Notes\Test.cpp">
@@ -38,31 +38,34 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\IButton.h">
+    <ClInclude Include="Source\Core\IButton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\ButtonSingle.h">
+    <ClInclude Include="Source\Core\ButtonSingle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\ButtonCombo.h">
+    <ClInclude Include="Source\Core\ButtonCombo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\ActionButtonBinder.h">
+    <ClInclude Include="Source\Core\ActionButtonBinder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\PersistenceManager.h">
+    <ClInclude Include="Source\Core\PersistenceManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Action.h">
+    <ClInclude Include="Source\Core\Action.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Exceptions.h">
+    <ClInclude Include="Source\Core\Exceptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\SharedTypes.h">
+    <ClInclude Include="Source\Core\SharedTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Bases.h">
+    <ClInclude Include="Source\Core\Bases.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Util\PlatformUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -70,10 +73,6 @@
     <Text Include="Notes\Notes.txt" />
     <Text Include="Resource\strBaseUM.txt" />
     <Text Include="Resource\strBaseIC.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="Resource\BaseIC.xml" />
-    <Xml Include="Resource\BaseUM.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\CreateBaseXMLStringCode.bat">

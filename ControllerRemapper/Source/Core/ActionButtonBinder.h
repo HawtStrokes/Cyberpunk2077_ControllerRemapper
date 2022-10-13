@@ -7,13 +7,22 @@ namespace  ControllerMapper {
 
 	class IButton;
 	class Action;
+	struct CharacterAction;
 
 	class ActionButtonBinder
 	{
 	private:
-		//std::unordered_map<Action*, IButton*> m_Binds;
+		void Internal_Reset();
+
+		// Bind Action to Button (will create new keys)
+		void Internal_Bind(Action*, std::shared_ptr<IButton>);
+
+		// Deletes Action_ptrs
+		void Internal_CleanUp();
+
+	private:
 		std::unordered_map<Action*, std::shared_ptr<IButton>> m_Binds;
-		ActionButtonBinder() = default;
+		ActionButtonBinder();
 		~ActionButtonBinder();
 
 	public:
@@ -24,10 +33,15 @@ namespace  ControllerMapper {
 		void BuildXML(const std::string& file);
 
 		// Binds button shared_ptr to Action*
+
+		// Binds button shared_ptr to Action* (Will not create new keys)
 		void Bind(Action*, std::shared_ptr<IButton>);
 
-		// Deletes Action_ptrs
-		void _CleanUp();
+		// returns button from Action*
+		std::shared_ptr<IButton> GetButtonFromCharacterAction(CharacterAction);
+
+		// ResetBinds
+		void ResetBinds();
 
 		// returns binds hash map
 		std::unordered_map<Action*, std::shared_ptr<IButton>>& GetBinds();

@@ -8,7 +8,7 @@ namespace ControllerMapper {
 	private:
 		ControllerKey m_Key1;
 		ControllerKey m_Key2;
-		std::string m_XMLName;
+		std::string m_XMLName;	// xmlActionMapName
 
 	public:
 		std::string GetXMLName() override;

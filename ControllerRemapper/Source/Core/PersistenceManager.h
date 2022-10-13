@@ -13,7 +13,8 @@ namespace ControllerMapper
 		// Verifiers
 		inline bool Internal_VerifyGameDir(const std::string&);
 		inline bool Internal_IsDir(const std::string&);
-
+		// Set Loaded Dir
+		inline void Internal_SetLoadedSave(const std::string& configName);
 		inline void Internal_CheckMakeDir(const std::string&);
 
 	private:
@@ -53,9 +54,6 @@ namespace ControllerMapper
 		// Set Save Dir
 		void SetSaveDir(const std::string& saveDir);
 
-		// Set Loaded Dir
-		void SetLoadedSave(const std::string& configName);
-
 		// Get Game Dir
 		std::string GetGameDir();
 
@@ -64,5 +62,8 @@ namespace ControllerMapper
 
 		// Return number of Saves
 		unsigned int GetNumberOfSaves();
+
+		// returns vector of all config names in saveDir
+		std::vector<std::string> GetSaves();
 	};
 }

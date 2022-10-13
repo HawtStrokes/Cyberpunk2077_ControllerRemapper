@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <unordered_map>
 
 #include "SharedTypes.h"
 
@@ -32,56 +33,9 @@
 #define OPTIONS_QUICKMELEE			(HOLD | STAP		 )
 #define OPTIONS_RELOAD				(HOLD | STAP | DTAP	 )
 
+
 namespace ControllerMapper
 {
-	struct XMLCode;
-
-	struct CharacterAction
-	{
-	public:
-		enum class ActionType : char {
-
-			Cyberware,
-			CombatGadget,
-			Consumable,
-
-			Jump,
-			Crouch,
-			Dodge,
-			Sprint,
-
-			Phone,
-			CallCar,
-			Scan,
-			Tag,
-
-			Choice1,
-			Choice2,
-
-			Notification,
-
-			CycleWeapons,
-			PreviousWeapon,
-			QuickMelee,
-
-			Reload
-		};
-
-	private:
-		unsigned int Internal_GetSupportedOptions();
-
-	public:
-		ActionType actionType;
-		unsigned int supportedOptions;
-		
-		CharacterAction(ActionType actionType);
-	};
-
-	struct CharacterOptions
-	{
-		unsigned int options;
-	};
-
 	class Action
 	{
 	private:
@@ -91,10 +45,10 @@ namespace ControllerMapper
 		Action(CharacterAction, CharacterOptions);
 
 	private:
+		static std::unordered_map<CharacterAction, Action*> m_ActionCache;
 		CharacterAction m_CharacterAction;
 		CharacterOptions m_CharacterOptions;
-		XMLCode m_XMLCode;
-
+		std::string m_XMLCodeUM;
 
 	public:
 		Action(const Action&) = default;
@@ -114,10 +68,11 @@ namespace ControllerMapper
 		CharacterOptions GetCharacterOptions();
 
 
-		// build action and return copy
-		static Action BuildAction(CharacterAction, CharacterOptions);
-		// build action in heap and return pointer
-		static Action* BuildActionPtr(CharacterAction, CharacterOptions);
+		// build or find action in heap and return pointer
+		static Action* GetActionPtr(CharacterAction, CharacterOptions);
+
+		// build or find action in heap and return pointer
+		static Action* GetActionPtr(CharacterAction);
 
 
 		// Get UM xml block
@@ -126,20 +81,29 @@ namespace ControllerMapper
 		// Get IC xml block
 		std::string GetXMLCodeIC();
 
-		// Get both UM and IC as an entire struct
-		XMLCode GetXMLCode();
+		std::string GetXMLActionMapName();
+
+		std::string GetXMLActionName();
 
 	public:
-		//static bool Static_DoubleTapEnabled(CharacterOptions characterOptions);
+		// Checks if double tap is enabled
+		static inline bool IsDoubleTap(CharacterOptions characterOptions) 
+		{
+			// Read first bit (which is either a 1 or 0)
+			return (static_cast<unsigned>(static_cast<unsigned char>(characterOptions.options << 7)) >> 7);
+		}
+
+		// Checks if Toggle is enabled
+		static inline bool IsToggle(CharacterOptions characterOptions)
+		{
+			return ((characterOptions.options >> 2) == 1);
+		}
 	};
 
+	//// Get XML Block to be appended to baseUM
+	//std::string GetXMLBlock(CharacterAction::ActionType actionType);
 
-	// Checks if double tap is enabled
-	bool IsDoubleTapEnabled(CharacterOptions characterOptions);
+	//// Get the associated xml action name to be formatted into an xml block
+	
 
-	// Get XML Block to be appended to baseUM
-	std::string GetXMLBlock(CharacterAction::ActionType actionType);
-
-	// Get the associated xml action name to be formatted into an xml block
-	std::string GetXMLActionName(CharacterAction::ActionType actionType, bool isToggle = false);
 }

@@ -553,14 +553,6 @@
 	<mapping name="RightShoulder_Button" type="Button" >
 		<button id="IK_Pad_RightShoulder" />
 	</mapping>
-
-	<!-- BUTTON COMBO GROUPS -->
-	<!-- has time timeWindow during which the combo can be activated ( default param. =  0.1f )
-		 has input locking mechanism, all combo buttons need to be released in order to unlock. -->
-	<buttonGroup id="IK_Pad_LeftRightShoulder" timeWindow="0.08f" >
-		<button id="IK_Pad_LeftShoulder" />
-		<button id="IK_Pad_RightShoulder" />
-    </buttonGroup>
 	
 	<!-- TAKEDOWN -->
 	<mapping name="Takedown_Button" type="Button" >

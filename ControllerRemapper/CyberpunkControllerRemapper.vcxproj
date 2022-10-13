@@ -20,32 +20,29 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Notes\Test.cpp" />
-    <ClCompile Include="Source\Action.cpp" />
+    <ClCompile Include="Source\Core\Action.cpp" />
     <ClCompile Include="Source\Application.cpp" />
-    <ClCompile Include="Source\ButtonCombo.cpp" />
-    <ClCompile Include="Source\ButtonSingle.cpp" />
-    <ClCompile Include="Source\ActionButtonBinder.cpp" />
-    <ClCompile Include="Source\PersistenceManager.cpp" />
+    <ClCompile Include="Source\Core\ButtonCombo.cpp" />
+    <ClCompile Include="Source\Core\ButtonSingle.cpp" />
+    <ClCompile Include="Source\Core\ActionButtonBinder.cpp" />
+    <ClCompile Include="Source\Core\PersistenceManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Action.h" />
-    <ClInclude Include="Source\Bases.h" />
-    <ClInclude Include="Source\ButtonCombo.h" />
-    <ClInclude Include="Source\ButtonSingle.h" />
-    <ClInclude Include="Source\ActionButtonBinder.h" />
-    <ClInclude Include="Source\Exceptions.h" />
-    <ClInclude Include="Source\IButton.h" />
-    <ClInclude Include="Source\PersistenceManager.h" />
-    <ClInclude Include="Source\SharedTypes.h" />
+    <ClInclude Include="Source\Core\Action.h" />
+    <ClInclude Include="Source\Core\Bases.h" />
+    <ClInclude Include="Source\Core\ButtonCombo.h" />
+    <ClInclude Include="Source\Core\ButtonSingle.h" />
+    <ClInclude Include="Source\Core\ActionButtonBinder.h" />
+    <ClInclude Include="Source\Core\Exceptions.h" />
+    <ClInclude Include="Source\Core\IButton.h" />
+    <ClInclude Include="Source\Core\PersistenceManager.h" />
+    <ClInclude Include="Source\Core\SharedTypes.h" />
+    <ClInclude Include="Source\Util\PlatformUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Notes\Notes.txt" />
     <Text Include="Resource\strBaseIC.txt" />
     <Text Include="Resource\strBaseUM.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="Resource\BaseIC.xml" />
-    <Xml Include="Resource\BaseUM.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\CopyDLL.bat" />
@@ -129,7 +126,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\External\fmt\include;$(SolutionDir)\External\HawtLib\HawtLib\Build\includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\External\fmt\include;$(SolutionDir)\External\HawtLib\HawtLib\Build\Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>Default</LanguageStandard_C>
     </ClCompile>
@@ -146,7 +143,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\External\fmt\include;$(SolutionDir)\External\HawtLib\HawtLib\Build\includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\External\fmt\include;$(SolutionDir)\External\HawtLib\HawtLib\Build\Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>Default</LanguageStandard_C>
     </ClCompile>
@@ -163,7 +160,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;GUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\External\fmt\include;$(SolutionDir)\External\HawtLib\HawtLib\Build\includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\External\fmt\include;$(SolutionDir)\External\HawtLib\HawtLib\Build\Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>Default</LanguageStandard_C>
     </ClCompile>
@@ -182,7 +179,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\External\fmt\include;$(SolutionDir)\External\HawtLib\HawtLib\Build\includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\External\fmt\include;$(SolutionDir)\External\HawtLib\HawtLib\Build\Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>Default</LanguageStandard_C>
     </ClCompile>
