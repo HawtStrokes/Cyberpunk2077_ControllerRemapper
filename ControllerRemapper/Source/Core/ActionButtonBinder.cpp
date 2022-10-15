@@ -76,13 +76,13 @@ namespace ControllerMapper
 	// Builds XML to FileLocation
 	void ActionButtonBinder::BuildXML(const std::string& fileLocation) {
 		auto CreateButtonComboXML = [](ButtonCombo& button)->std::string {
-			return fmt::format(fmt::runtime( R"(<buttonGroup id="{}" timeWindow="0.08f" > <button id="{}" /> <button id="{}" /> </buttonGroup>)"), button.GetXMLName(), GetControllerKeyXML(button.GetKey1()), GetControllerKeyXML(button.GetKey2()));
+			return fmt::format( R"(<buttonGroup id="{}" timeWindow="0.08f" > <button id="{}" /> <button id="{}" /> </buttonGroup>)", button.GetXMLName(), GetControllerKeyXML(button.GetKey1()), GetControllerKeyXML(button.GetKey2()));
 		};
 		auto CreateButtonBindXML = [](IButton* button, Action* action)-> std::string {
 			return  fmt::format(fmt::runtime(action->GetXMLCodeUM()), button->GetXMLName());
 		};
 		auto CreateDoubleTapXML = [](Action* action) -> std::string {
-			return fmt::format(fmt::runtime(R"(<multitap action="{}" count="2" uptime="0.2" downtime="0.2" />)"), action->GetXMLActionName());
+			return fmt::format(R"(<multitap action="{}" count="2" uptime="0.2" downtime="0.2" />)", action->GetXMLActionName());
 
 		};
 
@@ -104,7 +104,6 @@ namespace ControllerMapper
 			}
 
 			// check if action supports double tap and if double tap is enabled
-			CharacterAction kvAction = kv.first->GetCharacterAction();	// Store to variable to avoid repetitive function call in next if statement
 			if (Action::IsDoubleTap(kv.first->GetCharacterOptions()))
 			{
 				vecToIC.emplace_back(CreateDoubleTapXML(kv.first));

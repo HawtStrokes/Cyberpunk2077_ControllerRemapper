@@ -37,9 +37,6 @@ namespace  ControllerMapper {
 		// Binds button shared_ptr to Action* (Will not create new keys)
 		void Bind(Action*, std::shared_ptr<IButton>);
 
-		// returns button from Action*
-		std::shared_ptr<IButton> GetButtonFromCharacterAction(CharacterAction);
-
 		// ResetBinds
 		void ResetBinds();
 

@@ -19,13 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Notes\Test.cpp" />
+    <ClCompile Include="Source\Ext\imgui\BuildImGui.cpp" />
+    <ClCompile Include="Source\Gui\CustomFont.h" />
     <ClCompile Include="Source\Core\Action.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\Core\ButtonCombo.cpp" />
     <ClCompile Include="Source\Core\ButtonSingle.cpp" />
     <ClCompile Include="Source\Core\ActionButtonBinder.cpp" />
     <ClCompile Include="Source\Core\PersistenceManager.cpp" />
+    <ClCompile Include="Source\Gui\GuiApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Core\Action.h" />
@@ -37,6 +39,7 @@
     <ClInclude Include="Source\Core\IButton.h" />
     <ClInclude Include="Source\Core\PersistenceManager.h" />
     <ClInclude Include="Source\Core\SharedTypes.h" />
+    <ClInclude Include="Source\Gui\GuiApp.h" />
     <ClInclude Include="Source\Util\PlatformUtil.h" />
   </ItemGroup>
   <ItemGroup>
@@ -143,15 +146,17 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\External\fmt\include;$(SolutionDir)\External\HawtLib\HawtLib\Build\Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\External\imgui\backends;$(SolutionDir)\External\imgui;%VULKAN_SDK%\Include;$(SolutionDir)\External\fmt\include;$(SolutionDir)\External\glfw\include;$(SolutionDir)\External\HawtLib\HawtLib\Build\Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>Default</LanguageStandard_C>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)\External\HawtLib\HawtLib\Build\Release_DLL\Output;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>HawtLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%VULKAN_SDK%\Lib;$(SolutionDir)\External\glfw\build\src\Release;$(SolutionDir)\External\HawtLib\HawtLib\Build\Release_DLL\Output;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;HawtLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_DLL_GUI|x64'">
@@ -160,15 +165,16 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;GUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\External\fmt\include;$(SolutionDir)\External\HawtLib\HawtLib\Build\Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\External\imgui\backends;$(SolutionDir)\External\imgui;%VULKAN_SDK%\Include;$(SolutionDir)\External\fmt\include;$(SolutionDir)\External\glfw\include;$(SolutionDir)\External\HawtLib\HawtLib\Build\Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>Default</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)\External\HawtLib\HawtLib\Build\Debug_DLL\Output;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>HawtLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%VULKAN_SDK%\Lib;$(SolutionDir)\External\glfw\build\src\Debug;$(SolutionDir)\External\HawtLib\HawtLib\Build\Debug_DLL\Output;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;HawtLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_DLL|x64'">
