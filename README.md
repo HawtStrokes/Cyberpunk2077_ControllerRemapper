@@ -2,7 +2,7 @@
 
 Remap Controller Buttons for Cyberpunk 2077.
 
-<img src="https://github.com/HawtStrokes/Cyberpunk2077_ControllerRemapper/blob/main/Resources/SampleImage.png" width=70% height=70%>
+<img src="https://github.com/HawtStrokes/Cyberpunk2077_ControllerRemapper/blob/main/Resources/SampleImage.png" width=90% height=90%>
 
 As of patch 1.6, there is virtually no concrete way to change the button layouts for controllers in the game. This tool allows the remapping of controller buttons to actions with a few extra:
 
