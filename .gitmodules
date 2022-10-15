@@ -7,3 +7,10 @@
 [submodule "External/HawtLib"]
 	path = External/HawtLib
 	url = https://github.com/HawtStrokes/HawtLib.git
+[submodule "External/glfw"]
+	path = External/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "External/imgui"]
+	path = External/imgui
+	url = https://github.com/ocornut/imgui.git
+	branch = docking
