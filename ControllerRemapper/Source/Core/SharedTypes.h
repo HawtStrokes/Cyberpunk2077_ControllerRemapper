@@ -56,12 +56,10 @@ namespace ControllerMapper {
 	};;
 }
 
-namespace std {
-	template <>
-	struct hash<ControllerMapper::CharacterAction> {
-		std::size_t operator()(const ControllerMapper::CharacterAction& key) const {
-			return static_cast<unsigned>(key.actionType);
-		}
-	};
-
-}
+template <>
+struct std::hash<ControllerMapper::CharacterAction> {
+	std::size_t operator()(const ControllerMapper::CharacterAction& key) const noexcept
+	{
+		return static_cast<unsigned>(key.actionType);
+	}
+};

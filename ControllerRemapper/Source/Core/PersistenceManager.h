@@ -9,6 +9,7 @@ namespace ControllerMapper
 		// Exception Throwers
 		inline void Internal_ThrowEmpty(const std::string&);
 		inline void Internal_ThrowCheckConfig(const std::string&);
+		inline void Internal_CheckIllegals(const std::string&);
 
 		// Verifiers
 		inline bool Internal_VerifyGameDir(const std::string&);

@@ -78,9 +78,6 @@ namespace ControllerMapper
 		// Get UM xml block
 		std::string GetXMLCodeUM();
 
-		// Get IC xml block
-		std::string GetXMLCodeIC();
-
 		std::string GetXMLActionMapName();
 
 		std::string GetXMLActionName();

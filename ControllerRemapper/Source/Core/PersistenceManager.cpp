@@ -36,7 +36,7 @@ namespace ControllerMapper {
 
 	// Private Ctor
 	PersistenceManager::PersistenceManager() : m_SaveDir("Saves"), m_NumberOfSaves(0) {
-		auto gamePath = Util::GetGamePath();
+		const auto gamePath = Util::GetGamePath();
 		if (gamePath.has_value())
 		{
 			m_GameDir = gamePath.value();
@@ -53,6 +53,8 @@ namespace ControllerMapper {
 	// Updates save counts
 	void PersistenceManager::UpdateSaveCount() {
 		m_NumberOfSaves = 0;
+		Internal_CheckMakeDir(m_SaveDir);
+
 		for (auto& entry : std::filesystem::directory_iterator(std::filesystem::path(m_SaveDir))) {
 			if (entry.is_directory()) {
 				++m_NumberOfSaves;
@@ -73,8 +75,31 @@ namespace ControllerMapper {
 
 	// Throw if config is empty or has folders
 	inline void PersistenceManager::Internal_ThrowCheckConfig(const std::string& configName) {
+		Internal_CheckIllegals(configName);
 		Internal_ThrowEmpty(configName);
 		if (Internal_IsDir(configName)) throw DirectoryIsDisallowed();
+	}
+
+	// Throws if contains illegal characters
+	inline void PersistenceManager::Internal_CheckIllegals(const std::string& str)
+	{
+		constexpr char illegalCharacters[] = {
+		'<',
+		'>',
+		':',
+		'"',
+			'.',	// Not really illegal unless used alone, just disable for safety
+		'/',
+		'\\',
+		'|',
+		'?',
+		'*'
+		};
+		for (const char c : illegalCharacters)
+		{
+			if (str.find(c) != std::string::npos)
+				throw std::runtime_error("File contains Invalid Characters!");
+		}
 	}
 
 	// Shallowly checks if dir is indeed cp2077 dir
@@ -136,7 +161,7 @@ namespace ControllerMapper {
 		UpdateSaveCount();	// update save count
 	}
 
-	// Loads a configuratin ini and update Binds
+	// Loads a configuration ini and update Binds
 	void PersistenceManager::Load(const std::string& configName) {
 		Internal_ThrowCheckConfig(configName);
 
@@ -216,6 +241,7 @@ namespace ControllerMapper {
 		Internal_SetLoadedSave(configName);
 	}
 
+	// Deletes configuration
 	void PersistenceManager::Delete(const std::string& configName) {
 		Internal_ThrowCheckConfig(configName);
 		std::filesystem::remove_all(std::filesystem::path(m_SaveDir + "/" + configName));
@@ -234,14 +260,17 @@ namespace ControllerMapper {
 
 	// Set Game directory
 	void PersistenceManager::SetGameDir(const std::string& gameDir) {
-		auto gamePath = std::filesystem::path(gameDir);
+		const auto gamePath = std::filesystem::path(gameDir);
 		if (!std::filesystem::exists(gamePath)) {
 			if (!std::filesystem::is_directory(gamePath))
 				throw InvalidGameDir("Must be an existing Directory!");
 			throw InvalidGameDir("Must be an existing Directory!");
 		}
 		if (!Internal_VerifyGameDir(gameDir))
-			std::cout << "Warning: Directory doesn't seem to contain binary executables associated with Cyberpunk 2077" << std::endl;
+		{
+			throw InvalidGameDir("Directory doesn't contain binary executables associated with Cyberpunk 2077");
+		}
+			
 
 		m_GameDir = gameDir;
 	}
@@ -281,6 +310,7 @@ namespace ControllerMapper {
 	// returns vector of all config names in saveDir
 	std::vector<std::string> PersistenceManager::GetSaves()
 	{
+		Internal_CheckMakeDir(m_SaveDir);
 		std::vector<std::string> retVec;
 		for (auto& entry : std::filesystem::directory_iterator(std::filesystem::path(m_SaveDir))) {
 			if (entry.is_directory()) {
@@ -295,16 +325,16 @@ namespace ControllerMapper {
 				if (fwdSlashIdx != std::string::npos) {
 					// check if bwd is npos
 					if (bwdSlashIdx != std::string::npos) {
-						beginIdx = std::max(fwdSlashIdx, bwdSlashIdx);	// get bigger number of the two
+						beginIdx = std::max(fwdSlashIdx + 1, bwdSlashIdx + 1);	// get bigger number of the two
 					}
 					else {
-						beginIdx = fwdSlashIdx;	// else set idx to the defined
+						beginIdx = fwdSlashIdx + 1;	// else set idx to the defined
 					}
 				}
 
 				// else check if bwd is npos
 				else if (bwdSlashIdx != std::string::npos)
-					beginIdx = bwdSlashIdx;
+					beginIdx = bwdSlashIdx + 1;
 
 
 				retVec.emplace_back(strDir.substr(beginIdx, strDir.size() - beginIdx));

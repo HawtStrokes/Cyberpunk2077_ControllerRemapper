@@ -33,7 +33,13 @@
     <ClCompile Include="Source\Core\ButtonCombo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Notes\Test.cpp">
+    <ClCompile Include="Source\Gui\GuiApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui\CustomFont.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Ext\imgui\BuildImGui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -66,6 +72,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Util\PlatformUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gui\GuiApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
