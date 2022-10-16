@@ -2,7 +2,9 @@
 
 Remap Controller Buttons for Cyberpunk 2077.
 
-As of patch 1.6, there is virtually no concrete way to change the button layouts for controllers in the game. This tool allows the remapping of controller buttons to an action with a few extra:
+<img src="https://github.com/HawtStrokes/Cyberpunk2077_ControllerRemapper/blob/main/Resources/SampleImage.png" width=90% height=90%>
+
+As of patch 1.6, there is virtually no concrete way to change the button layouts for controllers in the game. This tool allows the remapping of controller buttons to actions with a few extra:
 
 1.  Button combos support
 2.  Single Tap or Double Tap Mode
@@ -12,8 +14,15 @@ It also provides persistence capability, allowing you to store button layouts on
 
 ## **Sample**
 
-![Cyberpunk2077_ControllerRemapper Sample](/Resources/CyberpunkControllerRemapperSample.gif)
+![Cyberpunk2077_ControllerRemapper Gif Sample](/Resources/CyberpunkControllerRemapperSample.gif)
 
 ## **How It Works**
 
 It takes the currently configured binds and builds minimized XML files associated with Input Mappings, which will replace the ones in the game folder.
+
+## **Dependencies**
+
+- https://github.com/glfw/glfw
+- https://github.com/ocornut/imgui
+- https://github.com/fmtlib/fmt
+- https://github.com/HawtStrokes/HawtLib
