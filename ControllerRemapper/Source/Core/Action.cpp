@@ -49,6 +49,8 @@ namespace ControllerMapper
 			return OPTIONS_CYCLEWEAPONS;
 		case ActionType::PreviousWeapon:
 			return OPTIONS_PREVIOUSWEAPON;
+		case ActionType::SwitchItem:
+			return OPTIONS_SWITCHITEM;
 		case ActionType::QuickMelee:
 			return OPTIONS_QUICKMELEE;
 		case ActionType::Reload:
@@ -199,6 +201,11 @@ R"(	<mapping name="PreviousWeapon_Button" type="Button" >
 		<button id="IK_MouseWheelDown" overridableUI="previousWeapon"/>
 		<button id="{}" overridableUI="previousWeapon"/> 
 	</mapping>	)"},
+			{ CharacterAction::ActionType::SwitchItem,
+R"(	<mapping name="SwitchItem_Button" type="Button" >
+		<button id="IK_Alt" overridableUI="switchItem"/>
+		<button id="{}" />
+	</mapping>)" },
 			{CharacterAction::ActionType::QuickMelee,
 R"( <mapping name="QuickMelee_Button" type="Button" >
 		<button id="{}" />
@@ -337,6 +344,7 @@ R"(	<mapping name="Reload_Button" type="Button" >
 
 			{CharacterAction::ActionType::CycleWeapons, "WeaponWheel_Button"},
 			{CharacterAction::ActionType::PreviousWeapon, "PreviousWeapon_Button"},
+			{CharacterAction::ActionType::SwitchItem, "SwitchItem_Button"},
 			{CharacterAction::ActionType::QuickMelee, "QuickMelee_Button"},
 
 			{CharacterAction::ActionType::Reload, "Reload_Button"}
@@ -386,6 +394,7 @@ R"(	<mapping name="Reload_Button" type="Button" >
 
 			{CharacterAction::ActionType::CycleWeapons, "WeaponWheel"},
 			{CharacterAction::ActionType::PreviousWeapon, "PreviousWeapon"},
+			{CharacterAction::ActionType::SwitchItem, "SwitchItem"},
 			{CharacterAction::ActionType::QuickMelee, "QuickMelee"},
 
 			{CharacterAction::ActionType::Reload, "Reload"}

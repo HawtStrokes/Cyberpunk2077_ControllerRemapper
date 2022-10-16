@@ -62,6 +62,7 @@ namespace ControllerMapper
 
 		Internal_Bind(Action::GetActionPtr(CharacterAction::ActionType::CycleWeapons, CharacterOptions(STAP | HOLD)), std::make_shared<ButtonSingle>(ControllerKey::Y_TRIANGLE));
 		Internal_Bind(Action::GetActionPtr(CharacterAction::ActionType::PreviousWeapon, CharacterOptions(STAP | HOLD)), std::make_shared<ButtonSingle>(ControllerKey::None));
+		Internal_Bind(Action::GetActionPtr(CharacterAction::ActionType::SwitchItem, CharacterOptions(STAP | HOLD)), std::make_shared<ButtonSingle>(ControllerKey::Y_TRIANGLE));
 		Internal_Bind(Action::GetActionPtr(CharacterAction::ActionType::QuickMelee, CharacterOptions(STAP | HOLD)), std::make_shared<ButtonSingle>(ControllerKey::RightThumb));
 		Internal_Bind(Action::GetActionPtr(CharacterAction::ActionType::Reload, CharacterOptions(STAP | HOLD)), std::make_shared<ButtonSingle>(ControllerKey::X_SQUARE));
 	}

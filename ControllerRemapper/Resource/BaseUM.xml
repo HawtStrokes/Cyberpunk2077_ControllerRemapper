@@ -354,11 +354,6 @@
     </mapping> 
 
 
-	
-	<mapping name="SwitchItem_Button" type="Button" >
-		<button id="IK_Alt" overridableUI="switchItem"/>
-		<button id="IK_Pad_Y_TRIANGLE" />
-	</mapping>
 
 	<mapping name="NextWeapon_Button" type="Button" >
 		<button id="IK_MouseWheelUp" overridableUI="nextWeapon"/>

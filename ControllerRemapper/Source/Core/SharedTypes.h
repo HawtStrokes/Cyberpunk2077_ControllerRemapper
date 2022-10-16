@@ -33,6 +33,7 @@ namespace ControllerMapper {
 
 			CycleWeapons,
 			PreviousWeapon,
+			SwitchItem,
 			QuickMelee,
 
 			Reload

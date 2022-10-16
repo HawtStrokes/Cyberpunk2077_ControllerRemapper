@@ -155,7 +155,7 @@ namespace ControllerMapper
 			ImGui::Begin("Summary", &showSummary);
 			if (ImGui::BeginTable("Summary Table", 4, ImGuiTableFlags_BordersH))
 			{
-				for (int row = 0; row < 18; row++)
+				for (int row = 0; row < static_cast<int>(CharacterAction::ActionType::Reload); row++)
 				{
 					ImGui::TableNextRow();
 					for (int column = 0; column < 4; column++)
