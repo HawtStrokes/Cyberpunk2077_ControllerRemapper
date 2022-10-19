@@ -337,12 +337,17 @@ static void glfw_error_callback(int error, const char* description)
 
 namespace WrapGui
 {
-	GuiApp::GuiApp()
+	GuiApp* GuiApp::m_Instance = nullptr;
+
+	
+	GuiApp::GuiApp(const WindowDetails& windowDetails)
 	{
+		m_WindowDetails = windowDetails;
 		if (Internal_Init() != 0)
 			throw(std::exception("Error Initializing GUI Components!"));
 		m_Run = true;
 	}
+
 
 	int GuiApp::Internal_Init()
 	{
@@ -350,10 +355,13 @@ namespace WrapGui
 		glfwSetErrorCallback(glfw_error_callback);
 		if (!glfwInit())
 			return 1;
-
+		
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-		m_MainWindow = glfwCreateWindow(1280, 720, "WrapGui", NULL, NULL);
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+		glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
+		m_MainWindow = glfwCreateWindow(m_WindowDetails.width, m_WindowDetails.height, m_WindowDetails.title.c_str(), NULL, NULL);
+		
 		// Setup Vulkan
 		if (!glfwVulkanSupported())
 		{
@@ -491,8 +499,20 @@ namespace WrapGui
 
 	GuiApp& GuiApp::Get()
 	{
-		static GuiApp instance;
-		return instance;
+		if (m_Instance == nullptr)
+			throw std::exception("GuiApp Not Initialized! Call InitGui first");
+		else  return *m_Instance;
+	}
+
+	void GuiApp::InitGui(const WindowDetails& windowDetails)
+	{
+		if (m_Instance != nullptr)
+			throw std::exception("GuiApp already Initialized!");
+		else
+		{
+			static GuiApp instance(windowDetails);
+			m_Instance = &instance;
+		}
 	}
 
 	GuiApp::~GuiApp()
@@ -510,15 +530,17 @@ namespace WrapGui
 		glfwHideWindow(m_MainWindow);
 	}
 
+
 	void GuiApp::Run()
 	{
 		ImGui_ImplVulkanH_Window* wd = &g_MainWindowData;
 		ImGuiIO& io = ImGui::GetIO();
 		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-		//glfwHideWindow(window);
+
 		// Main loop
 		while (!glfwWindowShouldClose(m_MainWindow) && m_Run)
 		{
+
 			// Poll and handle events (inputs, window resize, etc.)
 			// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
 			// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.

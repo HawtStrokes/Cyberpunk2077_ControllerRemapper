@@ -35,6 +35,10 @@ namespace ControllerMapper
 
 	} g_twoIntCache = {0, 0};
 
+	static bool showAbout = false;
+	static bool showSummary = false;
+	static bool showHelp = false;
+
 	namespace GUIComponents
 	{
 		static void Save()
@@ -140,14 +144,14 @@ namespace ControllerMapper
 			ImGui::End();
 		}
 
-		static void About(bool& showAbout)
+		static void About()
 		{
 			ImGui::Begin("About", &showAbout);
-			ImGui::TextWrapped("Cyberpunk 2077 Controller Button Remapper");
+			ImGui::TextWrapped("Cyberpunk 2077 Controller Button Remapper Version 0.5.2-alpha");
 			ImGui::End();
 		}
 
-		static void Summary(bool& showSummary)
+		static void Summary()
 		{
 			ActionButtonBinder& abbInstance = ActionButtonBinder::Get();
 			const auto& binds = abbInstance.GetBinds();
@@ -244,7 +248,22 @@ namespace ControllerMapper
 				if (i > 0)
 					keyName = keyName.substr(7);
 
-				if (ImGui::Button(keyName.c_str()))
+				
+				if ((g_IsTwoButton && keyName == "RightTrigger") || (g_IsTwoButton && keyName == "LeftTrigger"))
+				{
+					ImGui::BeginDisabled(false);
+					ImGui::Button(keyName.append(" [DISABLED]").c_str());
+					ImGui::EndDisabled();
+
+					ControllerKey cK1 = static_cast<ControllerKey>(g_twoIntCache.x), cK2 = static_cast<ControllerKey>(g_twoIntCache.y);
+
+					if (cK1 == ControllerKey::RightTrigger || cK1 == ControllerKey::LeftTrigger)
+						g_twoIntCache.x = static_cast<size_t>(ControllerKey::None);
+					if (cK2 == ControllerKey::RightTrigger || cK2 == ControllerKey::LeftTrigger)
+						g_twoIntCache.y = static_cast<size_t>(ControllerKey::None);
+				}
+
+				else if (ImGui::Button(keyName.c_str()))
 				{
 					if (i != g_twoIntCache.y)
 					{
@@ -274,6 +293,59 @@ namespace ControllerMapper
 					g_OpenedAction = kV.first;
 				}
 			}
+
+			ImGui::End();
+		}
+
+		static void Help()
+		{
+			ImGui::Begin("Help", &showHelp);
+			if (ImGui::Button("Copy Link to Official Wiki Page") )
+			{
+				ImGui::SetClipboardText("https://github.com/HawtStrokes/Cyberpunk2077_ControllerRemapper/wiki");
+			}
+
+			ImGui::Separator();
+
+			if (ImGui::CollapsingHeader("Navigation and Layout"))
+			{
+				std::string strNavHelp = R"(There are five dock spaces, and each window can be docked to any of the five dock spaces or be left floating. 
+
+To dock a window to a dock space, simply drag the title bar of a window to one of the five dock spaces
+
+It isn't required to dock a window, it can be left detached so long as you don't direct it to a dock space.
+)";
+				ImGui::TextWrapped(strNavHelp.c_str());
+			}
+
+			if (ImGui::CollapsingHeader("Bindings"))
+			{
+				std::string bindHelp = R"(There are three core windows that are essential for binding---Map Actions, Map Buttons, and Pending Binds. Binding works like a state machine, each set state (in this case, action, button/s, and options) can be seen in the Pending Binds Window.
+
+You can change the action to bind by choosing one in the Map Actions window. Options (e.g., Double Tap and Toggle Mode) and Button/s can be changed in the Map Buttons window.
+
+Review the states you've set in the Pending Binds and click the Bind button to finalize. Repeat the process on other actions you wish to rebind.
+
+You can review the custom binds you've made in the Summary window. Open this by clicking the Summary button. If you're satisfied with the current custom binds, click Apply to overwrite the default binds in the game (IMPORTANT!).
+
+You can reset the binds to the game's defaults by going to File>Reset and click Apply (IMPORTANT!).
+)";
+				ImGui::TextWrapped(bindHelp.c_str());
+			}
+
+			if (ImGui::CollapsingHeader("Persistence"))
+			{
+				std::string persistHelp = R"(There are five dock spaces, and each window can be docked to any of the five dock spaces or be left floating. 
+
+To dock a window to a dock space, simply drag the title bar of a window to one of the five dock spaces
+
+It isn't required to dock a window, it can be left detached so long as you don't direct it to a dock space.
+)";
+				ImGui::TextWrapped( persistHelp.c_str());
+			}
+
+
+			
 
 			ImGui::End();
 		}
@@ -341,16 +413,12 @@ namespace ControllerMapper
 
 	void GUIMain()
 	{
-		static bool showAbout = false;
-		static bool showSummary = false;
-
 		auto& guiInstance = WrapGui::GuiApp::Get();
 		auto& abbinstance = ActionButtonBinder::Get();
 		auto& pmInstance = PersistenceManager::Get();
 
-		guiInstance.HideWindow();
 		ImGui::SetNextWindowSize(g_WindowDimensions);
-		ImGui::Begin("Cyberpunk 2077 Controller Buttons Remapper", guiInstance.GetRunStatePtr(), ImGuiWindowFlags_NoResize | ImGuiWindowFlags_MenuBar);
+		ImGui::Begin("Cyberpunk 2077 Controller Buttons Remapper", guiInstance.GetRunStatePtr(), ImGuiWindowFlags_NoResize | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoCollapse);
 		if (ImGui::BeginMenuBar())
 		{
 			if (ImGui::BeginMenu("File"))
@@ -367,6 +435,14 @@ namespace ControllerMapper
 				if (ImGui::MenuItem("Exit"))
 				{
 					guiInstance.Close();
+				}
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Help"))
+			{
+				if (ImGui::MenuItem("View Help"))
+				{
+					showHelp = true;
 				}
 				ImGui::EndMenu();
 			}
@@ -393,19 +469,19 @@ namespace ControllerMapper
 		ImGui::Separator();
 
 		ImGui::DockSpace(ImGui::GetID("ActionBinds"), ImVec2(g_WindowDimensions.x/3.125f, g_WindowDimensions.y / 2.5f));
-		ImGui::SetNextWindowDockID(ImGui::GetID("ActionBinds"));
+		ImGui::SetNextWindowDockID(ImGui::GetID("ActionBinds"), ImGuiCond_FirstUseEver | ImGuiConfigFlags_DockingEnable);
 		GUIComponents::ChooseActions();
 
 		ImGui::SameLine();
 		
 		ImGui::DockSpace(ImGui::GetID("ButtonBinds"), ImVec2(g_WindowDimensions.x/3.125f, g_WindowDimensions.y / 2.5f));
-		ImGui::SetNextWindowDockID(ImGui::GetID("ButtonBinds"));
+		ImGui::SetNextWindowDockID(ImGui::GetID("ButtonBinds"), ImGuiCond_FirstUseEver | ImGuiConfigFlags_DockingEnable);
 		GUIComponents::ChooseButtons(g_OpenedAction);
 
 		ImGui::SameLine();
 
 		ImGui::DockSpace(ImGui::GetID("Binds"), ImVec2(g_WindowDimensions.x / 3.125f, g_WindowDimensions.y / 2.5f));
-		ImGui::SetNextWindowDockID(ImGui::GetID("Binds"));
+		ImGui::SetNextWindowDockID(ImGui::GetID("Binds"), ImGuiCond_FirstUseEver | ImGuiConfigFlags_DockingEnable);
 		GUIComponents::SelectedActionButton();
 
 		ImGui::Separator();
@@ -464,34 +540,40 @@ namespace ControllerMapper
 
 		ImGui::DockSpace(ImGui::GetID("Persistence"), ImVec2(g_WindowDimensions.x - 10.0f, g_WindowDimensions.y/4.5f));
 		ImGui::DockSpace(ImGui::GetID("Logs"));
-		ImGui::SetNextWindowDockID(ImGui::GetID("Logs"));
+		ImGui::SetNextWindowDockID(ImGui::GetID("Logs"), ImGuiCond_FirstUseEver | ImGuiConfigFlags_DockingEnable);
 		ImGui::Begin("Log Window");
 		if (ImGui::Button("Clear"))
 			g_LogBuf.clear();
-			if (ImGui::CollapsingHeader("Logs"))
+			if (ImGui::CollapsingHeader("Logs", ImGuiTreeNodeFlags_DefaultOpen))
 			{
 				ImGui::Text("%s", g_LogBuf.begin());
 			}
 				
 		ImGui::End();
 
-		ImGui::SetNextWindowDockID(ImGui::GetID("Persistence"));
+		ImGui::SetNextWindowDockID(ImGui::GetID("Persistence"), ImGuiCond_FirstUseEver | ImGuiConfigFlags_DockingEnable);
 		GUIComponents::Save();
-		ImGui::SetNextWindowDockID(ImGui::GetID("Persistence"));
+		ImGui::SetNextWindowDockID(ImGui::GetID("Persistence"), ImGuiCond_FirstUseEver | ImGuiConfigFlags_DockingEnable);
 		GUIComponents::Load();
-		ImGui::SetNextWindowDockID(ImGui::GetID("Persistence"));
+		ImGui::SetNextWindowDockID(ImGui::GetID("Persistence"), ImGuiCond_FirstUseEver | ImGuiConfigFlags_DockingEnable);
 		GUIComponents::Delete();
 
 		if(showAbout)
 		{
-			ImGui::SetNextWindowDockID(ImGui::GetID("Persistence"));
-			GUIComponents::About(showAbout);
+			ImGui::SetNextWindowDockID(ImGui::GetID("Persistence"), ImGuiCond_FirstUseEver | ImGuiConfigFlags_DockingEnable);
+			GUIComponents::About();
 		}
 		
 		if (showSummary)
 		{
-			ImGui::SetNextWindowDockID(ImGui::GetID("Persistence"));
-			GUIComponents::Summary(showSummary);
+			ImGui::SetNextWindowDockID(ImGui::GetID("Persistence"), ImGuiCond_FirstUseEver | ImGuiConfigFlags_DockingEnable);
+			GUIComponents::Summary();
+		}
+
+		if (showHelp)
+		{
+			ImGui::SetNextWindowDockID(ImGui::GetID("Persistence"), ImGuiCond_FirstUseEver | ImGuiConfigFlags_DockingEnable);
+			GUIComponents::Help();
 		}
 
 		ImGui::End();
@@ -500,7 +582,9 @@ namespace ControllerMapper
 
 int main()
 {
+	WrapGui::GuiApp::InitGui({ "", 1, 1 });
 	auto& guiInstance = WrapGui::GuiApp::Get();
+	guiInstance.HideWindow();
 	guiInstance.SetMain(GUIMain);
 	guiInstance.Run();
 }
