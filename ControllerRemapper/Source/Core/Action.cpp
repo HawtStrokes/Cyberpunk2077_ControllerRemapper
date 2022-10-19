@@ -133,7 +133,7 @@ R"(<mapping name="Crouch_Button" type="Button" >
     </mapping>)"},	// Supports Toggle
 			{CharacterAction::ActionType::Dodge,
 R"(<mapping name="Dodge_Button" type="Button" >
-		<button id="IK_Pad_B_CIRCLE" />
+		<button id="{}" />
 		<button id="IK_LControl" overridableUI="crouchHold"/>
 		<button id="IK_C" overridableUI="crouchToggle"/>
     </mapping>)"},
