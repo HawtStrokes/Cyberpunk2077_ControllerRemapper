@@ -318,8 +318,8 @@ namespace ControllerMapper {
 
 				// if all later checks fail, default is the initialized 0
 				size_t beginIdx = 0;
-				size_t fwdSlashIdx = strDir.rfind('/');
-				size_t bwdSlashIdx = strDir.rfind('\\');
+				const size_t fwdSlashIdx = strDir.rfind('/');
+				const size_t bwdSlashIdx = strDir.rfind('\\');
 
 				// check if fwd is npos
 				if (fwdSlashIdx != std::string::npos) {

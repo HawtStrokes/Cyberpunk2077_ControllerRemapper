@@ -43,7 +43,6 @@
     <ClInclude Include="Source\Util\PlatformUtil.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Notes\Notes.txt" />
     <Text Include="Resource\strBaseIC.txt" />
     <Text Include="Resource\strBaseUM.txt" />
   </ItemGroup>

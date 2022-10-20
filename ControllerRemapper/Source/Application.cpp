@@ -63,7 +63,7 @@ namespace ControllerMapper
 			}
 
 			ImGui::BeginChild("Saves List");
-			auto saves = pmInstance.GetSaves();
+			const auto saves = pmInstance.GetSaves();
 
 			std::string allSaves;
 			for(const auto& save : saves)
@@ -255,7 +255,7 @@ namespace ControllerMapper
 					ImGui::Button(keyName.append(" [DISABLED]").c_str());
 					ImGui::EndDisabled();
 
-					ControllerKey cK1 = static_cast<ControllerKey>(g_twoIntCache.x), cK2 = static_cast<ControllerKey>(g_twoIntCache.y);
+					const ControllerKey cK1 = static_cast<ControllerKey>(g_twoIntCache.x), cK2 = static_cast<ControllerKey>(g_twoIntCache.y);
 
 					if (cK1 == ControllerKey::RightTrigger || cK1 == ControllerKey::LeftTrigger)
 						g_twoIntCache.x = static_cast<size_t>(ControllerKey::None);
@@ -309,18 +309,18 @@ namespace ControllerMapper
 
 			if (ImGui::CollapsingHeader("Navigation and Layout"))
 			{
-				std::string strNavHelp = R"(There are five dock spaces, and each window can be docked to any of the five dock spaces or be left floating. 
+				const std::string strNavHelp = R"(There are five dock spaces, and each window can be docked to any of the five dock spaces or be left floating. 
 
 To dock a window to a dock space, simply drag the title bar of a window to one of the five dock spaces
 
 It isn't required to dock a window, it can be left detached so long as you don't direct it to a dock space.
 )";
-				ImGui::TextWrapped(strNavHelp.c_str());
+				ImGui::TextWrapped("%s", strNavHelp.c_str());
 			}
 
 			if (ImGui::CollapsingHeader("Bindings"))
 			{
-				std::string bindHelp = R"(There are three core windows that are essential for binding---Map Actions, Map Buttons, and Pending Binds. Binding works like a state machine, each set state (in this case, action, button/s, and options) can be seen in the Pending Binds Window.
+				const std::string bindHelp = R"(There are three core windows that are essential for binding---Map Actions, Map Buttons, and Pending Binds. Binding works like a state machine, each set state (in this case, action, button/s, and options) can be seen in the Pending Binds Window.
 
 You can change the action to bind by choosing one in the Map Actions window. Options (e.g., Double Tap and Toggle Mode) and Button/s can be changed in the Map Buttons window.
 
@@ -330,22 +330,19 @@ You can review the custom binds you've made in the Summary window. Open this by 
 
 You can reset the binds to the game's defaults by going to File>Reset and click Apply (IMPORTANT!).
 )";
-				ImGui::TextWrapped(bindHelp.c_str());
+				ImGui::TextWrapped("%s", bindHelp.c_str());
 			}
 
 			if (ImGui::CollapsingHeader("Persistence"))
 			{
-				std::string persistHelp = R"(There are five dock spaces, and each window can be docked to any of the five dock spaces or be left floating. 
+				const std::string persistHelp = R"(Custom binds you've made can be saved to disk using the Save Menu. Type in the name you wish to save the configuration as, and click confirm. Loading and Deleting are done the same way in their respective menus, albeit with different functionalities implied by their names (load and delete configurations).
 
-To dock a window to a dock space, simply drag the title bar of a window to one of the five dock spaces
+Configurations are saved as Ini Files in the Save/ folder.
 
-It isn't required to dock a window, it can be left detached so long as you don't direct it to a dock space.
+Search and Configuration Selection functionalities are currently not implemented, so you must manually type in the configuration name and click confirm.
 )";
-				ImGui::TextWrapped( persistHelp.c_str());
+				ImGui::TextWrapped( "%s", persistHelp.c_str());
 			}
-
-
-			
 
 			ImGui::End();
 		}
@@ -359,8 +356,8 @@ It isn't required to dock a window, it can be left detached so long as you don't
 			if (g_IsTwoButton)
 			{
 				g_BoundButton = std::make_shared<ButtonCombo>(ButtonCombo(static_cast<ControllerKey>(g_twoIntCache.x), static_cast<ControllerKey>(g_twoIntCache.y)));
-				std::string firstKey = GetControllerKeyXML(static_cast<ControllerKey>(g_twoIntCache.x));
-				std::string secondKey = GetControllerKeyXML(static_cast<ControllerKey>(g_twoIntCache.y));
+				const std::string firstKey = GetControllerKeyXML(static_cast<ControllerKey>(g_twoIntCache.x));
+				const std::string secondKey = GetControllerKeyXML(static_cast<ControllerKey>(g_twoIntCache.y));
 
 				ImGui::TextWrapped("Selected Button Combo:\n   %s\n   %s",
 					firstKey == "NONE" ? firstKey.c_str() : firstKey.substr(7).c_str(),
@@ -541,14 +538,14 @@ It isn't required to dock a window, it can be left detached so long as you don't
 		ImGui::DockSpace(ImGui::GetID("Persistence"), ImVec2(g_WindowDimensions.x - 10.0f, g_WindowDimensions.y/4.5f));
 		ImGui::DockSpace(ImGui::GetID("Logs"));
 		ImGui::SetNextWindowDockID(ImGui::GetID("Logs"), ImGuiCond_FirstUseEver | ImGuiConfigFlags_DockingEnable);
+
 		ImGui::Begin("Log Window");
 		if (ImGui::Button("Clear"))
 			g_LogBuf.clear();
-			if (ImGui::CollapsingHeader("Logs", ImGuiTreeNodeFlags_DefaultOpen))
-			{
-				ImGui::Text("%s", g_LogBuf.begin());
-			}
-				
+		if (ImGui::CollapsingHeader("Logs", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::Text("%s", g_LogBuf.begin());
+		}
 		ImGui::End();
 
 		ImGui::SetNextWindowDockID(ImGui::GetID("Persistence"), ImGuiCond_FirstUseEver | ImGuiConfigFlags_DockingEnable);
