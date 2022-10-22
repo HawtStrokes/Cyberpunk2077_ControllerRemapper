@@ -13,6 +13,7 @@ using namespace ControllerMapper;
 #include "Gui/GuiApp.h"
 #include "imgui.h"
 #include "fmt/format.h"
+#include "HawtLib/Text/TextFormatting.h"
 
 namespace ControllerMapper
 {
@@ -41,38 +42,51 @@ namespace ControllerMapper
 
 	namespace GUIComponents
 	{
+
+		///
+		///	PERSISTENCE WINDOWS
+		///
+
 		static void Save()
 		{
 			PersistenceManager& pmInstance = PersistenceManager::Get();
+			static int currentItem;
 
 			ImGui::Begin("Save Menu", nullptr);
 			static char buffer[512];
 			ImGui::InputText("Configuration Name", buffer, sizeof(buffer));
+			
+			std::vector<std::string> saves = pmInstance.GetSaves();
+
+			auto VectorOfStringGetter = [](void* data, int idx, const char** outText)->bool
+			{
+				auto* strSaves = static_cast<std::string*>(data);
+				std::string& strSave = strSaves[idx];
+				*outText = strSave.c_str();
+				return true;
+			};
+
+			ImGui::ListBox(
+				"##Saves List",
+				&currentItem,
+				VectorOfStringGetter,
+				saves.data(),
+				saves.size()
+			);
+
 			ImGui::SameLine();
-			if (ImGui::Button("Confirm"))
+			if (ImGui::Button("Save", ImVec2(80, 30)))
 			{
 				try
 				{
 					pmInstance.Save(std::string(buffer));
-					g_LogBuf.appendf("Saved Current Configuration to %s\n", buffer);
+					g_LogBuf.appendf("Saved Configuration as %s\n", buffer);
 				}
 				catch (std::exception& e)
 				{
 					g_LogBuf.appendf("%s\n", e.what());
 				}
 			}
-
-			ImGui::BeginChild("Saves List");
-			const auto saves = pmInstance.GetSaves();
-
-			std::string allSaves;
-			for(const auto& save : saves)
-			{
-				allSaves += save + "\n";
-			}
-
-			ImGui::Text("%s", allSaves.c_str());
-			ImGui::EndChild();
 
 			ImGui::End();
 		}
@@ -80,17 +94,54 @@ namespace ControllerMapper
 		static void Load()
 		{
 			PersistenceManager& pmInstance = PersistenceManager::Get();
+			static int currentItem;
 
-			ImGui::Begin("Load Menu", nullptr);
+			ImGui::Begin("Load  Menu", nullptr);
 			static char buffer[512];
-			ImGui::InputText("Configuration Name", buffer, sizeof(buffer));
-			ImGui::SameLine();
-			if (ImGui::Button("Confirm"))
+			ImGui::InputText("Search Configuration", buffer, sizeof(buffer));
+
+			std::vector<std::string> saves = pmInstance.GetSaves();
+			if (!std::string(buffer).empty())
+			{
+				std::vector<size_t> vecIdx;
+
+				size_t idx = 0;
+				for (auto& save : saves)
+				{
+					if (HawtLib::Text::ToLower(save).find(HawtLib::Text::ToLower(std::string(buffer))) == std::string::npos)
+					{
+						vecIdx.push_back(idx);
+					}
+					++idx;
+				}
+
+				for (size_t i = 0; i < vecIdx.size(); ++i)
+				{
+					saves.erase(saves.begin() + (vecIdx[i] - i));
+				}
+			}
+
+			auto VectorOfStringGetter = [](void* data, int idx, const char** outText)->bool
+			{
+				auto* strSaves = static_cast<std::string*>(data);
+				std::string& strSave = strSaves[idx];
+				*outText = strSave.c_str();
+				return true;
+			};
+			ImGui::ListBox(
+				"##Saves List",
+				&currentItem,
+				VectorOfStringGetter,
+				saves.data(),
+				saves.size()
+			);
+
+			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 			{
 				try
 				{
-					pmInstance.Load(std::string(buffer));
-					g_LogBuf.appendf("Loaded Configuration %s\n", buffer);
+					pmInstance.Load(saves[currentItem]);
+					g_LogBuf.appendf("Loaded Configuration %s\n", saves[currentItem].c_str());
 				}
 				catch (std::exception& e)
 				{
@@ -98,56 +149,97 @@ namespace ControllerMapper
 				}
 			}
 
-			ImGui::BeginChild("Saves List");
-			const auto saves = pmInstance.GetSaves();
-			std::string allSaves;
-			for (const auto& save : saves)
+			ImGui::SameLine();
+			if (ImGui::Button("Load", ImVec2(80, 30)))
 			{
-				allSaves += save + "\n";
+				try
+				{
+					pmInstance.Load(saves[currentItem]);
+					g_LogBuf.appendf("Loaded Configuration %s\n", saves[currentItem].c_str());
+				}
+				catch (std::exception& e)
+				{
+					g_LogBuf.appendf("%s\n", e.what());
+				}
 			}
-			ImGui::Text("%s", allSaves.c_str());
-			ImGui::EndChild();
-
 			ImGui::End();
 		}
 
 		static void Delete()
 		{
 			PersistenceManager& pmInstance = PersistenceManager::Get();
+			static int currentItem;
 
 			ImGui::Begin("Delete Menu", nullptr);
 			static char buffer[512];
-			ImGui::InputText("Configuration Name", buffer, sizeof(buffer));
+			ImGui::InputText("Search Configuration", buffer, sizeof(buffer));
+
+			std::vector<std::string> saves = pmInstance.GetSaves();
+			if (!std::string(buffer).empty())
+			{
+				std::vector<size_t> vecIdx;
+
+				size_t idx = 0;
+				for (auto& save : saves)
+				{
+					if (HawtLib::Text::ToLower(save).find(HawtLib::Text::ToLower(std::string(buffer))) == std::string::npos)
+					{
+						vecIdx.push_back(idx);
+					}
+					++idx;
+				}
+
+				for (size_t i = 0; i < vecIdx.size(); ++i)
+				{
+					saves.erase(saves.begin() + (vecIdx[i] - i));
+				}
+			}
+
+			auto VectorOfStringGetter = [](void* data, int idx, const char** outText)->bool
+			{
+				auto* strSaves = static_cast<std::string*>(data);
+				std::string& strSave = strSaves[idx];
+				*outText = strSave.c_str();
+				return true;
+			};
+			ImGui::ListBox(
+				"##Saves List",
+				&currentItem,
+				VectorOfStringGetter,
+				saves.data(),
+				saves.size()
+			);
+
+			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+			{
+				g_LogBuf.appendf("Click Delete to delete configuration %s\n", saves[currentItem].c_str());
+			}
+
 			ImGui::SameLine();
-			if (ImGui::Button("Confirm"))
+			if (ImGui::Button("Delete", ImVec2(80, 30)))
 			{
 				try
 				{
-					pmInstance.Delete(std::string(buffer));
-					g_LogBuf.appendf("Deleted Configuration %s\n", buffer);
+					pmInstance.Delete(saves[currentItem]); 
+					g_LogBuf.appendf("Deleted Configuration %s\n", saves[currentItem].c_str());
 				}
 				catch (std::exception& e)
 				{
 					g_LogBuf.appendf("%s\n", e.what());
 				}
 			}
-
-			ImGui::BeginChild("Saves List");
-			const auto saves = pmInstance.GetSaves();
-			std::string allSaves;
-			for (const auto& save : saves)
-			{
-				allSaves += save + "\n";
-			}
-			ImGui::Text("%s", allSaves.c_str());
-			ImGui::EndChild();
 			ImGui::End();
 		}
 
+
+		///
+		/// INFO WINDOWS
+		///
+		
 		static void About()
 		{
 			ImGui::Begin("About", &showAbout);
-			ImGui::TextWrapped("Cyberpunk 2077 Controller Button Remapper Version 0.5.2-alpha");
+			ImGui::TextWrapped("Cyberpunk 2077 Controller Button Remapper Version 0.5.3-alpha");
 			ImGui::End();
 		}
 
@@ -208,6 +300,78 @@ namespace ControllerMapper
 				}
 				ImGui::EndTable();
 			}
+			ImGui::End();
+		}
+
+		static void Help()
+		{
+			ImGui::Begin("Help", &showHelp);
+			if (ImGui::Button("Copy Link to Official Wiki Page") )
+			{
+				ImGui::SetClipboardText("https://github.com/HawtStrokes/Cyberpunk2077_ControllerRemapper/wiki");
+			}
+
+			ImGui::Separator();
+
+			if (ImGui::CollapsingHeader("Navigation and Layout"))
+			{
+				const std::string strNavHelp = R"(There are five dock spaces, and each window can be docked to any of the five dock spaces or be left floating. 
+
+To dock a window to a dock space, simply drag the title bar of a window to one of the five dock spaces
+
+It isn't required to dock a window, it can be left detached so long as you don't direct it to a dock space.
+)";
+				ImGui::TextWrapped("%s", strNavHelp.c_str());
+			}
+
+			if (ImGui::CollapsingHeader("Bindings"))
+			{
+				const std::string bindHelp = R"(There are three core windows that are essential for binding---Map Actions, Map Buttons, and Pending Binds. Binding works like a state machine, each set state (in this case, action, button/s, and options) can be seen in the Pending Binds Window.
+
+You can change the action to bind by choosing one in the Map Actions window. Options (e.g., Double Tap and Toggle Mode) and Button/s can be changed in the Map Buttons window.
+
+Review the states you've set in the Pending Binds and click the Bind button to finalize. Repeat the process on other actions you wish to rebind.
+
+You can review the custom binds you've made in the Summary window. Open this by clicking the Summary button. If you're satisfied with the current custom binds, click Apply to overwrite the default binds in the game (IMPORTANT!).
+
+You can reset the binds to the game's defaults by going to File>Reset and click Apply (IMPORTANT!).
+)";
+				ImGui::TextWrapped("%s", bindHelp.c_str());
+			}
+
+			if (ImGui::CollapsingHeader("Persistence"))
+			{
+				const std::string persistHelp = R"(Custom binds you've made can be saved to disk using the Save Menu. Type in the name you wish to save the configuration as, and click save. Loading and Deleting are done the same way in their respective menus, albeit with different functionalities implied by their names (load and delete configurations).
+
+Configurations are saved as Ini Files in the Saves/ folder.
+
+As of version 0.5.3-alpha, searching and configuration selection are now supported.
+)";
+				ImGui::TextWrapped( "%s", persistHelp.c_str());
+			}
+
+			ImGui::End();
+		}
+
+		///
+		/// BIND WINDOWS
+		///
+
+		static void ChooseActions()
+		{
+			ImGui::Begin("Map Actions");
+			auto& abbInstance = ActionButtonBinder::Get();
+			const auto& binds = abbInstance.GetBinds();
+
+			for (auto& kV : binds)
+			{
+				// Personal preference, I like the way it looks -HawtStrokes
+				if (ImGui::Button(kV.first->GetXMLActionName().c_str()))
+				{
+					g_OpenedAction = kV.first;
+				}
+			}
+
 			ImGui::End();
 		}
 
@@ -274,74 +438,6 @@ namespace ControllerMapper
 						}
 					}
 				}
-			}
-
-			ImGui::End();
-		}
-
-		static void ChooseActions()
-		{
-			ImGui::Begin("Map Actions");
-			auto& abbInstance = ActionButtonBinder::Get();
-			const auto& binds = abbInstance.GetBinds();
-
-			for (auto& kV : binds)
-			{
-				// Personal preference, I like the way it looks -HawtStrokes
-				if (ImGui::Button(kV.first->GetXMLActionName().c_str()))
-				{
-					g_OpenedAction = kV.first;
-				}
-			}
-
-			ImGui::End();
-		}
-
-		static void Help()
-		{
-			ImGui::Begin("Help", &showHelp);
-			if (ImGui::Button("Copy Link to Official Wiki Page") )
-			{
-				ImGui::SetClipboardText("https://github.com/HawtStrokes/Cyberpunk2077_ControllerRemapper/wiki");
-			}
-
-			ImGui::Separator();
-
-			if (ImGui::CollapsingHeader("Navigation and Layout"))
-			{
-				const std::string strNavHelp = R"(There are five dock spaces, and each window can be docked to any of the five dock spaces or be left floating. 
-
-To dock a window to a dock space, simply drag the title bar of a window to one of the five dock spaces
-
-It isn't required to dock a window, it can be left detached so long as you don't direct it to a dock space.
-)";
-				ImGui::TextWrapped("%s", strNavHelp.c_str());
-			}
-
-			if (ImGui::CollapsingHeader("Bindings"))
-			{
-				const std::string bindHelp = R"(There are three core windows that are essential for binding---Map Actions, Map Buttons, and Pending Binds. Binding works like a state machine, each set state (in this case, action, button/s, and options) can be seen in the Pending Binds Window.
-
-You can change the action to bind by choosing one in the Map Actions window. Options (e.g., Double Tap and Toggle Mode) and Button/s can be changed in the Map Buttons window.
-
-Review the states you've set in the Pending Binds and click the Bind button to finalize. Repeat the process on other actions you wish to rebind.
-
-You can review the custom binds you've made in the Summary window. Open this by clicking the Summary button. If you're satisfied with the current custom binds, click Apply to overwrite the default binds in the game (IMPORTANT!).
-
-You can reset the binds to the game's defaults by going to File>Reset and click Apply (IMPORTANT!).
-)";
-				ImGui::TextWrapped("%s", bindHelp.c_str());
-			}
-
-			if (ImGui::CollapsingHeader("Persistence"))
-			{
-				const std::string persistHelp = R"(Custom binds you've made can be saved to disk using the Save Menu. Type in the name you wish to save the configuration as, and click confirm. Loading and Deleting are done the same way in their respective menus, albeit with different functionalities implied by their names (load and delete configurations).
-
-Configurations are saved as Ini Files in the Save/ folder.
-
-Search and Configuration Selection functionalities are currently not implemented, so you must manually type in the configuration name and click confirm.
-)";
-				ImGui::TextWrapped( "%s", persistHelp.c_str());
 			}
 
 			ImGui::End();
